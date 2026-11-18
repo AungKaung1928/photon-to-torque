@@ -20,4 +20,6 @@ Running example: Microduck walking policy (`microduck-rl` repo). 50 Hz policy ov
 ## Open before writing app text
 - Stage 1: cite one real camera datasheet, or drop camera numbers.
 - Stages 4-5: no Jetson or DDS measurement exists; app shows "not measured".
-- Verify every arXiv ID above against the paper page before it goes into the app.
+- arXiv IDs verified 2026-11-18 against the arXiv API: 1901.08652 = Hwangbo et al., "Learning agile and dynamic motor skills for legged robots"; 1703.06907 = Tobin et al., "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World".
+- Doc links checked 2026-11-18: ROS 2 QoS page moved to the Jazzy path (rolling path returns 404); control.ros.org, TensorRT docs, onnx.ai return 200.
+- Repo numbers re-checked against microduck-rl and so-arm100-rl READMEs: all match.

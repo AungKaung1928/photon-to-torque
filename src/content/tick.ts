@@ -64,7 +64,7 @@ export const stages: Stage[] = [
     budget: null,
     failure: 'Stale or dropped messages; incompatible QoS between publisher and subscriber means no connection.',
     sources: [
-      { label: 'ROS 2 docs: About Quality of Service settings', ref: 'https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Quality-of-Service-Settings.html' },
+      { label: 'ROS 2 docs: About Quality of Service settings', ref: 'https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html' },
     ],
   },
   {

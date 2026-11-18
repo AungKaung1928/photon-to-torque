@@ -1,32 +1,33 @@
-# React + TypeScript + Vite
+# Photon to Torque
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A study app that follows one robot control tick from the camera to the motor, stage by stage. For each stage it shows what happens, the time budget, the main failure mode, and the source of every number.
 
-Currently, two official plugins are available:
+Status: early. Chapter 1 (one control tick) has its content in `src/content/tick.ts`; the step-through view is being built.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Chapters
 
-## React Compiler
+1. One control tick: sensor, preprocess, policy, runtime, middleware, controller, actuator, physics.
+2. One PPO update, step by step.
+3. DDS / QoS explorer.
+4. The sim-to-real gap, with measured numbers.
+5. VLA action chunking.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Rules for content
 
-## Expanding the Oxlint configuration
+- Every number has a source: a paper, official documentation, or a measured result from one of the author's repositories (`microduck-rl`, `so-arm100-rl`).
+- A stage with no measurement says "not measured". No estimates.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Run
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev     # local dev server
+npm run build   # type check + static build into dist/
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Stack: Vite, React, TypeScript. Static site, hash routing, inline SVG.
+
+## Docs
+
+- `docs/DESIGN.md`: structure and content rules.
+- `docs/CH1_OUTLINE.md`: chapter 1 stages with budgets and sources.
