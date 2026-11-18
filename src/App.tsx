@@ -9,6 +9,8 @@ import { TickTimeline } from './components/TickTimeline'
 import { LatencyChart } from './components/LatencyChart'
 import { ClipPlot } from './components/ClipPlot'
 import { DiagTable } from './components/DiagTable'
+import { steps as ddsSteps, dds } from './content/dds'
+import { QosChecker, ProfilesTable } from './components/QosChecker'
 
 interface Chapter {
   n: number
@@ -67,6 +69,25 @@ function PpoPanels() {
   )
 }
 
+function DdsPanels() {
+  return (
+    <>
+      <section className="panel" aria-labelledby="qos-h">
+        <h2 id="qos-h">Will these two connect?</h2>
+        <p className="panel-lede">
+          Pick what each side asks for. ROS 2 checks each policy separately, and one mismatch is enough to stop all
+          messages.
+        </p>
+        <QosChecker />
+      </section>
+      <section className="panel" aria-labelledby="profiles-h">
+        <h2 id="profiles-h">The two profiles you meet first</h2>
+        <ProfilesTable />
+      </section>
+    </>
+  )
+}
+
 const CHAPTERS: Chapter[] = [
   {
     n: 1,
@@ -104,10 +125,27 @@ const CHAPTERS: Chapter[] = [
     ),
     panels: PpoPanels,
   },
+  {
+    n: 3,
+    route: 'dds',
+    title: 'DDS and QoS',
+    stages: ddsSteps,
+    unit: 'Step',
+    budgetLabel: 'Setting',
+    restartLabel: 'Next message',
+    ringLabel: 'Steps of one ROS 2 message, in order',
+    loopNote: 'Step 7 finishes one message; the next sample starts at step 2.',
+    intro: (
+      <>
+        Follow one ROS 2 message from publish() to the subscription callback, and see which QoS policy acts at each
+        step. {dds.example}
+      </>
+    ),
+    panels: DdsPanels,
+  },
 ]
 
 const PLANNED = [
-  { n: 3, title: 'DDS and QoS' },
   { n: 4, title: 'The sim-to-real gap' },
   { n: 5, title: 'VLA action chunking' },
 ]
