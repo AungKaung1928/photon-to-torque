@@ -5,22 +5,26 @@ interface Props {
   stage: Stage
   index: number
   total: number
+  route: string
+  unit: string // 'Stage' or 'Step'
+  budgetLabel: string // 'Budget' or 'Setting'
+  restartLabel: string // label of Next on the last step
 }
 
-export function StageCard({ stage, index, total }: Props) {
+export function StageCard({ stage, index, total, route, unit, budgetLabel, restartLabel }: Props) {
   const prev = index === 0 ? total : index
   const next = index === total - 1 ? 1 : index + 2
   return (
     <article className="stage" aria-labelledby="stage-title">
       <p className="eyebrow">
-        Stage {index + 1} of {total}
+        {unit} {index + 1} of {total}
       </p>
       <h2 id="stage-title">{stage.title}</h2>
       <p className="lede">{stage.what}</p>
 
       <dl className="facts">
         <div>
-          <dt>Budget</dt>
+          <dt>{budgetLabel}</dt>
           <dd>{stage.budget ?? <span className="chip">not measured</span>}</dd>
         </div>
         <div>
@@ -34,13 +38,13 @@ export function StageCard({ stage, index, total }: Props) {
         <SourceList sources={stage.sources} />
       </section>
 
-      <nav className="stepper" aria-label="Step through the tick">
-        <a id="tick-back" className="btn" href={`#/tick/${prev}`}>
+      <nav className="stepper" aria-label={`Step through the ${unit.toLowerCase()}s`}>
+        <a id={`${route}-back`} className="btn" href={`#/${route}/${prev}`}>
           Back
         </a>
         <span className="hint">or use the arrow keys</span>
-        <a id="tick-next" className="btn primary" href={`#/tick/${next}`}>
-          {index === total - 1 ? 'Start next tick' : 'Next stage'}
+        <a id={`${route}-next`} className="btn primary" href={`#/${route}/${next}`}>
+          {index === total - 1 ? restartLabel : `Next ${unit.toLowerCase()}`}
         </a>
       </nav>
     </article>

@@ -10,17 +10,25 @@ function point(i: number, n: number, r = R) {
   return { x: C + r * Math.cos(a), y: C + r * Math.sin(a), a }
 }
 
-// Clockwise loop of stages; stage n feeds stage 1 of the next tick.
-export function TickRing({ stages, current }: { stages: Stage[]; current: number }) {
+interface Props {
+  stages: Stage[]
+  current: number
+  route: string // e.g. 'tick' -> links to #/tick/N
+  unit: string // 'Stage' or 'Step'
+  label: string // figure label for screen readers
+  loopNote: string // what the last node feeds
+}
+
+// Clockwise loop: the last node feeds the first node of the next cycle.
+export function StageRing({ stages, current, route, unit, label, loopNote }: Props) {
   const n = stages.length
   const stage = stages[current]
   return (
-    <figure className="ring" aria-label="Stages of one control tick, in order">
+    <figure className="ring" aria-label={label}>
       <div className="ring-box">
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="presentation">
           <circle className="ring-track" cx={C} cy={C} r={R} />
           {stages.map((_, i) => {
-            // direction chevron halfway between node i and i+1
             const p = point(i + 0.5, n)
             const deg = (p.a * 180) / Math.PI + 90
             return (
@@ -38,10 +46,10 @@ export function TickRing({ stages, current }: { stages: Stage[]; current: number
             return (
               <a
                 key={s.id}
-                id={`ring-stage-${i + 1}`}
-                href={`#/tick/${i + 1}`}
+                id={`ring-${route}-${i + 1}`}
+                href={`#/${route}/${i + 1}`}
                 className={`ring-node ${state}`}
-                aria-label={`Stage ${i + 1}: ${s.title}${s.budget ? '' : ', not measured'}`}
+                aria-label={`${unit} ${i + 1}: ${s.title}${s.budget ? '' : ', no number'}`}
                 aria-current={i === current ? 'step' : undefined}
               >
                 <circle cx={p.x} cy={p.y} r={NODE_R} />
@@ -54,19 +62,19 @@ export function TickRing({ stages, current }: { stages: Stage[]; current: number
         </svg>
         <div className="ring-center" aria-hidden="true">
           <span className="eyebrow">
-            Stage {current + 1} / {n}
+            {unit} {current + 1} / {n}
           </span>
           <span className="ring-title">{stage.title}</span>
         </div>
       </div>
       <figcaption className="ring-legend">
         <span>
-          <i className="key measured" /> has a measured number
+          <i className="key measured" /> has a number with a source
         </span>
         <span>
-          <i className="key unmeasured" /> not measured
+          <i className="key unmeasured" /> no number
         </span>
-        <span>Stage {n} feeds stage 1 of the next tick.</span>
+        <span>{loopNote}</span>
       </figcaption>
     </figure>
   )

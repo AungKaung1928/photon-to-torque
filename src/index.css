@@ -196,7 +196,6 @@ main {
 }
 
 .chapters li.ready {
-  color: var(--ink);
   font-weight: 600;
 }
 
@@ -858,4 +857,148 @@ td {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* Chapter links */
+.chapters a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--ink-2);
+  text-decoration: none;
+  padding-block: 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.chapters a:hover {
+  color: var(--ink);
+}
+
+.chapters a[aria-current='page'] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* Clip plot */
+.clip {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.clip-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 560px;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.clip-control input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.clip-control .muted {
+  font-size: 0.8125rem;
+}
+
+.clip-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  max-width: 760px;
+}
+
+@media (min-width: 640px) {
+  .clip-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.clip-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.clip-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.clip-svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.clip-band {
+  fill: var(--surface-2);
+}
+
+.clip-svg .grid {
+  stroke: var(--hairline);
+  stroke-width: 1;
+}
+
+.clip-svg .axis {
+  fill: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.clip-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.clip-cursor {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.clip-dot {
+  fill: var(--series-1);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+
+.clip-dot.flat {
+  fill: var(--bg);
+  stroke: var(--series-1);
+}
+
+.clip-read {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.clip-read b {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.panel-note {
+  max-width: 68ch;
+  color: var(--ink-2);
+}
+
+.diag {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.diag td {
+  white-space: normal;
 }
