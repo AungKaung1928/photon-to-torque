@@ -731,6 +731,11 @@ figcaption {
   padding-bottom: 4px;
 }
 
+.gap-note {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
 .gap-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 3.75rem;

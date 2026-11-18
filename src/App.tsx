@@ -11,6 +11,9 @@ import { ClipPlot } from './components/ClipPlot'
 import { DiagTable } from './components/DiagTable'
 import { steps as ddsSteps, dds } from './content/dds'
 import { QosChecker, ProfilesTable } from './components/QosChecker'
+import { steps as gapSteps, sim2real, armGap, duckTrap } from './content/sim2real'
+import { BarGroups } from './components/BarGroups'
+import { SourceList } from './components/SourceList'
 
 interface Chapter {
   n: number
@@ -88,6 +91,77 @@ function DdsPanels() {
   )
 }
 
+const ARM_SERIES = [
+  { name: 'Trained on nominal physics', cls: 's1' },
+  { name: 'Fine-tuned with domain randomization', cls: 's2' },
+] as const
+const DUCK_SERIES = [
+  { name: 'Trained on nominal physics', cls: 's1' },
+  { name: 'Trained with domain randomization', cls: 's2' },
+] as const
+
+function Sim2RealPanels() {
+  const { meanDrop } = armGap
+  const { height, rollers } = duckTrap
+  const cm = (m: number) => (m * 100).toFixed(1)
+  return (
+    <>
+      <section className="panel" aria-labelledby="holdout-h">
+        <h2 id="holdout-h">Every cell the arm never trained on</h2>
+        <p className="panel-lede">
+          Mean drop from each policy&apos;s own nominal score over the {meanDrop.cells} held-out cells:{' '}
+          {meanDrop.nominal.toFixed(3)} for the nominal-trained policy, {meanDrop.dr.toFixed(3)} after the fine-tune
+          with domain randomization. Almost all of the gain is on one cell, three steps of action latency.
+        </p>
+        <BarGroups
+          id="arm"
+          series={[...ARM_SERIES]}
+          rows={armGap.cells.map((c) => ({
+            label: c.name,
+            note: c.note,
+            values: [
+              { v: c.nominal[0], sd: c.nominal[1] },
+              { v: c.dr[0], sd: c.dr[1] },
+            ],
+          }))}
+          unit="success rate"
+          rowHeader="Physics cell"
+          digits={3}
+          caption={
+            <>
+              Simulated arm lifting a cube. {armGap.protocol} {armGap.caveat}
+              <SourceList sources={armGap.sources} />
+            </>
+          }
+        />
+      </section>
+      <section className="panel" aria-labelledby="trap-h">
+        <h2 id="trap-h">A metric the policy gamed</h2>
+        <p className="panel-lede">
+          On its own training model, the biped trained with domain randomization never falls and is upright less
+          often. Its median trunk height is {cm(height.dr)} cm against {cm(height.standing)} cm standing: a low, tilted
+          crouch that passes the 4 cm survival check and fails the tilt check. On the held-out rollers model it scored{' '}
+          {rollers.dr} return of {rollers.max}, against {rollers.nominal} for the nominal policy.
+        </p>
+        <BarGroups
+          id="duck"
+          series={[...DUCK_SERIES]}
+          rows={duckTrap.metrics.map((m) => ({ label: m.name, values: [{ v: m.nominal }, { v: m.dr }] }))}
+          unit="fraction"
+          rowHeader="Metric"
+          digits={2}
+          caption={
+            <>
+              Simulated 14-joint biped on its training model. {duckTrap.caveat}
+              <SourceList sources={duckTrap.sources} />
+            </>
+          }
+        />
+      </section>
+    </>
+  )
+}
+
 const CHAPTERS: Chapter[] = [
   {
     n: 1,
@@ -143,15 +217,32 @@ const CHAPTERS: Chapter[] = [
     ),
     panels: DdsPanels,
   },
+  {
+    n: 4,
+    route: 'sim2real',
+    title: 'The sim-to-real gap',
+    stages: gapSteps,
+    unit: 'Step',
+    budgetLabel: 'Used here',
+    restartLabel: 'Next experiment',
+    ringLabel: 'Steps of one sim-to-real gap measurement, in order',
+    loopNote: 'Step 7 designs the next experiment, which starts again at step 1.',
+    intro: (
+      <>
+        Measure how much a policy loses when the physics changes, without a real robot. Each step shows what two
+        simulated projects did, how the measurement fails, and the source. {sim2real.example}
+      </>
+    ),
+    panels: Sim2RealPanels,
+  },
 ]
 
 const PLANNED = [
-  { n: 4, title: 'The sim-to-real gap' },
   { n: 5, title: 'VLA action chunking' },
 ]
 
 function parseHash(): { ch: Chapter; index: number } {
-  const m = window.location.hash.match(/^#\/([a-z]+)\/(\d+)$/)
+  const m = window.location.hash.match(/^#\/([a-z0-9]+)\/(\d+)$/)
   const ch = CHAPTERS.find((c) => c.route === m?.[1]) ?? CHAPTERS[0]
   const n = m ? Number(m[2]) : 1
   return { ch, index: n >= 1 && n <= ch.stages.length ? n - 1 : 0 }
