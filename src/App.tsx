@@ -14,6 +14,8 @@ import { QosChecker, ProfilesTable } from './components/QosChecker'
 import { steps as gapSteps, sim2real, armGap, duckTrap } from './content/sim2real'
 import { BarGroups } from './components/BarGroups'
 import { SourceList } from './components/SourceList'
+import { steps as vlaSteps, vla, scaling } from './content/vla'
+import { ChunkTimer } from './components/ChunkTimer'
 
 interface Chapter {
   n: number
@@ -162,6 +164,52 @@ function Sim2RealPanels() {
   )
 }
 
+const IL_SERIES = [
+  { name: 'One action per step', cls: 's1' },
+  { name: 'Chunk of 20 actions (ACTLite)', cls: 's2' },
+] as const
+
+function VlaPanels() {
+  return (
+    <>
+      <section className="panel" aria-labelledby="scaling-h">
+        <h2 id="scaling-h">More demonstrations do not rescue one step at a time</h2>
+        <p className="panel-lede">
+          Same demonstrations, same image encoder family, same L1 loss. Only the output differs: one action per step,
+          or a chunk of 20.
+        </p>
+        <BarGroups
+          id="scaling"
+          series={[...IL_SERIES]}
+          rows={scaling.rows.map((r) => ({
+            label: `${r.demos} demonstrations`,
+            values: [
+              { v: r.image[0], sd: r.image[1] },
+              { v: r.act[0], sd: r.act[1] },
+            ],
+          }))}
+          unit="lift success"
+          rowHeader="Demonstrations"
+          digits={2}
+          caption={
+            <>
+              Simulated arm lifting a cube. {scaling.protocol} {scaling.caveat}
+              <SourceList sources={scaling.sources} />
+            </>
+          }
+        />
+      </section>
+      <section className="panel" aria-labelledby="timing-h">
+        <h2 id="timing-h">Will the chunk cover its own inference?</h2>
+        <p className="panel-lede">
+          A 500M-parameter VLA, timed on this project&apos;s CPU. Drag the chunk length and watch how long the arm waits.
+        </p>
+        <ChunkTimer />
+      </section>
+    </>
+  )
+}
+
 const CHAPTERS: Chapter[] = [
   {
     n: 1,
@@ -235,11 +283,26 @@ const CHAPTERS: Chapter[] = [
     ),
     panels: Sim2RealPanels,
   },
+  {
+    n: 5,
+    route: 'vla',
+    title: 'VLA action chunking',
+    stages: vlaSteps,
+    unit: 'Step',
+    budgetLabel: 'Used here',
+    restartLabel: 'Next chunk',
+    ringLabel: 'Steps of one action chunk, in order',
+    loopNote: 'Steps 4 and 7 happen offline, in training and evaluation. The others run for every chunk.',
+    intro: (
+      <>
+        Follow one action chunk from camera frame to joint targets: why predicting many steps at once beats one, and
+        what it costs when the model is large. {vla.example}
+      </>
+    ),
+    panels: VlaPanels,
+  },
 ]
 
-const PLANNED = [
-  { n: 5, title: 'VLA action chunking' },
-]
 
 function parseHash(): { ch: Chapter; index: number } {
   const m = window.location.hash.match(/^#\/([a-z0-9]+)\/(\d+)$/)
@@ -298,13 +361,6 @@ export default function App() {
                 </a>
               </li>
             ))}
-            {PLANNED.map((c) => (
-              <li key={c.n} className="planned">
-                <span className="ch-n">{c.n}</span>
-                <span className="ch-title">{c.title}</span>
-                <span className="ch-state">planned</span>
-              </li>
-            ))}
           </ol>
         </nav>
       </header>
@@ -341,9 +397,6 @@ export default function App() {
 
       <footer className="foot">
         <p>Every number on this page has a source. A stage without one says not measured.</p>
-        <p>
-          {CHAPTERS.length} of {CHAPTERS.length + PLANNED.length} chapters written.
-        </p>
       </footer>
     </div>
   )
