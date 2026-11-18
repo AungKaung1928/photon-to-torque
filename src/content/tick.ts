@@ -15,10 +15,45 @@ export interface Stage {
 }
 
 const microduckReadme: Source = { label: 'microduck-rl README', ref: 'microduck-rl/README.md' }
+const soArmReadme: Source = { label: 'so-arm100-rl README, held-out gap table', ref: 'so-arm100-rl/README.md' }
 
 export const tick = {
   example: 'Microduck walking policy: 50 Hz policy over 500 Hz physics, so one tick is 20 ms and 10 physics steps.',
   sources: [microduckReadme],
+}
+
+// Measured timing for the running example (microduck-rl README: env step section, ONNX export table).
+export const timing = {
+  tickMs: 20,
+  physicsStepMs: 2,
+  policyP50Ms: 0.01,
+  policyP99Ms: 0.033,
+  policyNote: 'ONNX Runtime, 1 intra-op thread, batch 1, CPU.',
+  sources: [microduckReadme],
+}
+
+export interface GapCell {
+  success: number
+  sd: number
+}
+
+export interface GapRow {
+  physics: string
+  nominalTrained: GapCell
+  drFineTuned: GapCell
+}
+
+// so-arm100-rl, lift task, compare_gap.py. Measured 2026-09-24.
+export const latencyGap = {
+  rows: [
+    { physics: 'Nominal physics', nominalTrained: { success: 0.998, sd: 0.004 }, drFineTuned: { success: 0.998, sd: 0.004 } },
+    { physics: '3 steps of action latency', nominalTrained: { success: 0.458, sd: 0.052 }, drFineTuned: { success: 0.76, sd: 0.03 } },
+  ] as GapRow[],
+  protocol: '100 episodes × 5 evaluation seeds per cell; ± is the standard deviation over evaluation seeds.',
+  caveat:
+    'One training seed per policy. The DR policy also trained 10 M steps longer, and the matching longer nominal run has not been done. Simulation only; nothing here was measured on a physical arm.',
+  drRange: 'Training randomised 0 to 2 steps of action latency, so 3 steps is one step outside what the DR policy saw.',
+  sources: [soArmReadme],
 }
 
 export const stages: Stage[] = [
