@@ -2,7 +2,7 @@
 
 A study app that follows one robot control tick from the camera to the motor, stage by stage. For each stage it shows what happens, the time budget, the main failure mode, and the source of every number.
 
-Status: early. Chapter 1 (one control tick) has its content in `src/content/tick.ts`; the step-through view is being built.
+Status: chapters 1 and 2 are written. Content lives in `src/content/tick.ts` and `src/content/ppo.ts`; components only render it. Links: `#/tick/1` to `#/tick/8`, `#/ppo/1` to `#/ppo/7`. Arrow keys step through.
 
 ## Chapters
 
