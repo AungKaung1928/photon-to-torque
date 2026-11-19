@@ -5,7 +5,7 @@ const microduckReadme: Source = { label: 'microduck-rl README', ref: 'microduck-
 const soArmReadme: Source = { label: 'so-arm100-rl README, held-out gap table', ref: 'so-arm100-rl/README.md' }
 
 export const tick = {
-  example: 'Microduck の歩行ポリシー: 500 Hz の物理の上で 50 Hz のポリシーが動くので、1回の制御ティックは 20 ms、物理ステップ 10 回分です。',
+  example: 'Microduck の歩行ポリシー: 500 Hz の物理シミュレーションの上で 50 Hz のポリシーが動くので、1回の制御ティックは 20 ms、物理ステップ 10 回分です。',
   sources: [microduckReadme],
 }
 
@@ -21,12 +21,12 @@ export const timing = {
 export const latencyGap = {
   rows: [
     { physics: 'ノミナル物理', nominalTrained: { success: 0.998, sd: 0.004 }, drFineTuned: { success: 0.998, sd: 0.004 } },
-    { physics: 'アクションのレイテンシ 3 ステップ', nominalTrained: { success: 0.458, sd: 0.052 }, drFineTuned: { success: 0.76, sd: 0.03 } },
+    { physics: '行動レイテンシ 3 ステップ', nominalTrained: { success: 0.458, sd: 0.052 }, drFineTuned: { success: 0.76, sd: 0.03 } },
   ] as GapRow[],
   protocol: '各セル 100 エピソード × 評価シード 5 個。± は評価シード間の標準偏差です。',
   caveat:
-    '訓練シードはポリシーごとに 1 個です。DR ポリシーはさらに 10 M ステップ長く訓練しており、同じ長さのノミナル訓練はまだ実施していません。シミュレーションのみで、実機アームでは何も計測していません。',
-  drRange: '訓練ではアクションのレイテンシを 0〜2 ステップでランダム化したので、3 ステップは DR ポリシーが見た範囲の 1 ステップ外です。',
+    '学習シードはポリシーごとに 1 個です。DR ポリシーはさらに 10 M ステップ長く学習しており、同じ長さのノミナル学習はまだ実施していません。シミュレーションのみで、実機アームでは何も計測していません。',
+  drRange: '学習では行動レイテンシを 0〜2 ステップでランダム化したので、3 ステップは DR ポリシーが見た範囲の 1 ステップ外です。',
   sources: [soArmReadme],
 }
 
@@ -42,9 +42,9 @@ export const stages: Stage[] = [
   {
     id: 'preprocess',
     title: '前処理',
-    what: '生の読み値を、ポリシーが訓練で見た観測に変換します。Microduck はカメラを使わず、48 次元の固有受容観測を使います。',
+    what: '生の読み値を、ポリシーが学習時に見た観測に変換します。Microduck はカメラを使わず、48 次元の固有受容観測を使います。',
     budget: null,
-    failure: 'デプロイ時の正規化が訓練時と異なります。',
+    failure: 'デプロイ時の正規化が学習時と異なります。',
     sources: [microduckReadme],
   },
   {
@@ -52,7 +52,7 @@ export const stages: Stage[] = [
     title: 'ポリシーの順伝播',
     what: '小さな MLP が観測を 14 個の関節位置残差に変換します。',
     budget: 'ONNX Runtime p50 / p99 0.010 / 0.033 ms、1 スレッド、バッチ 1: 20 ms の制御ティックの 0.2%。',
-    failure: 'エクスポートしたグラフが訓練済みモデルと一致しません（1,000 観測で計測した最大差は 2.4e-06）。',
+    failure: 'エクスポートしたグラフが学習済みモデルと一致しません（1,000 観測で計測した最大差は 2.4e-06）。',
     sources: [microduckReadme],
   },
   {
@@ -87,7 +87,7 @@ export const stages: Stage[] = [
   {
     id: 'actuator',
     title: 'モータ / アクチュエータ',
-    what: 'サーボは遅れ、摩擦、トルク制限という自身のダイナミクスを持って目標に追従します。',
+    what: 'サーボは自身のダイナミクス（遅れ、摩擦、トルク制限）を伴って目標に追従します。',
     budget: null,
     failure: 'アクチュエータのダイナミクスがシミュレーションモデルと異なります。sim-to-real ギャップの主な原因の一つです。',
     sources: [{ label: 'Hwangbo et al. 2019, Science Robotics', ref: 'arXiv:1901.08652' }],
@@ -97,7 +97,7 @@ export const stages: Stage[] = [
     title: '物理から次の観測へ',
     what: '世界が動き、センサが新しい状態を読み、次の制御ティックが始まります。',
     budget: '物理ステップ 2 ms（500 Hz）。',
-    failure: 'アクションの適用が遅れます。so-arm100-rl では、アクションのレイテンシ 3 ステップ（DR 範囲の 1 ステップ外）で、成功率がノミナル訓練のポリシーで 0.998 → 0.458、DR ありで 0.998 → 0.760 に下がりました。',
+    failure: 'アクションの適用が遅れます。so-arm100-rl では、行動レイテンシ 3 ステップ（DR 範囲の 1 ステップ外）で、成功率がノミナル学習のポリシーで 0.998 → 0.458、DR ありで 0.998 → 0.760 に下がりました。',
     sources: [microduckReadme, { label: 'so-arm100-rl README', ref: 'so-arm100-rl/README.md' }],
   },
 ]

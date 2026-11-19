@@ -83,16 +83,16 @@ const UI = {
     durDefault: 'デフォルト',
     loadExample: '例のペアを読み込む',
     result: '結果',
-    connected: '接続: メッセージが流れます',
+    connected: '接続あり: メッセージが流れます',
     blocked: '接続なし: メッセージもエラーもありません',
     ok: 'OK',
-    blocks: '阻害',
+    blocks: 'NG',
     note: '例のペアで開きます。lifespan、history、depth はマッチングに影響しないため、ここにはありません。',
-    colPolicy: 'QoSポリシー',
+    colPolicy: 'QoS ポリシー',
     colDefault: 'デフォルトプロファイル',
     colSensor: 'センサーデータプロファイル',
     caption:
-      'デフォルトのサブスクリプションは reliable を要求するため、センサーデータのパブリッシャには決して接続しません。逆の組み合わせは動きます: best effort のサブスクリプションは reliable のパブリッシャを受け入れます。',
+      'デフォルトのサブスクリプションは reliable を要求するため、センサーデータのパブリッシャには決して接続しません。逆の組み合わせなら接続できます。best effort のサブスクリプションは reliable のパブリッシャを受け入れます。',
   },
 }
 

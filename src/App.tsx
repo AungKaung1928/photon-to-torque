@@ -46,7 +46,7 @@ function TickPanels() {
         <TickTimeline />
       </section>
       <section className="panel" aria-labelledby="latency-h">
-        <h2 id="latency-h">{lang === 'ja' ? 'ニューラルネットは安い部分' : 'The network is the cheap part'}</h2>
+        <h2 id="latency-h">{lang === 'ja' ? 'ニューラルネットはコストの小さい部分' : 'The network is the cheap part'}</h2>
         <p className="panel-lede">
           {lang === 'ja' ? (
             <>
@@ -81,7 +81,7 @@ function PpoPanels() {
         <h2 id="diag-h">{lang === 'ja' ? '診断指標が捉えたこと' : 'What the diagnostics caught'}</h2>
         <p className="panel-lede">
           {lang === 'ja'
-            ? '最初の 25M ステップは KL による停止なしで実行しました。毎回の更新でポリシーはクリップが許すはずの範囲を超えて動き、リターンは改善しませんでした。次の 25M ステップでは目標 KL 0.02 を追加しました。'
+            ? '前半 25M ステップは KL 停止なしで実行しました。毎回の更新でポリシーはクリップが許すはずの範囲を超えて動き、リターンは改善しませんでした。後半 25M ステップでは目標 KL 0.02 を追加しました。'
             : 'The first 25M steps ran without a KL stop. Every update moved the policy further than the clip is meant to allow, and the return did not improve. The second 25M steps added a target KL of 0.02.'}
         </p>
         <DiagTable />
@@ -179,7 +179,7 @@ function Sim2RealPanels() {
             <>
               ドメインランダマイゼーションで学習した二足ロボットは、自身の学習用モデル上では一度も転倒しませんが、直立している割合は低くなります。胴体高さの中央値は{' '}
               {cm(height.dr)} cm で、直立時は {cm(height.standing)} cm です。4 cm
-              の生存判定は通り、傾き判定には落ちる、低く傾いたしゃがみ姿勢です。ホールドアウトのローラーモデルでは、リターン{' '}
+              の生存判定は通り、傾き判定には落ちる、低く傾いたしゃがみ姿勢です。ホールドアウトの rollers モデルでは、リターン{' '}
               {rollers.max} 中 {rollers.dr} で、ノミナルポリシーは {rollers.nominal} でした。
             </>
           ) : (
@@ -397,7 +397,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       restartLabel: ja ? '次のチャンクへ' : 'Next chunk',
       ringLabel: ja ? '1 つの行動チャンクのステップ(順番)' : 'Steps of one action chunk, in order',
       loopNote: ja
-        ? 'ステップ 4 と 7 は学習と評価の中でオフラインに行います。それ以外はチャンクごとに実行します。'
+        ? 'ステップ 4 と 7 は学習時と評価時にオフラインで行います。それ以外はチャンクごとに実行します。'
         : 'Steps 4 and 7 happen offline, in training and evaluation. The others run for every chunk.',
       intro: ja ? (
         <>

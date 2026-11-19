@@ -21,8 +21,8 @@ const TEXT = {
   ja: {
     callout: (p50: string, p99: string, p50Pct: string, p99Pct: string) => (
       <>
-        ポリシーのフォワードパス: p50 <b>{p50} ms</b>、p99 <b>{p99} ms</b>。制御ティックの {p50Pct}% と {p99Pct}% にあたります。
-        {'0 ms の位置にある青い線は p99 のパスを実際の幅で描いたもので、見えるように最小幅を 1 px にしています。'}
+        ポリシーの順伝播: p50 <b>{p50} ms</b>、p99 <b>{p99} ms</b>。制御ティックの {p50Pct}% と {p99Pct}% にあたります。
+        {'0 ms の位置にある青い線は p99 の順伝播を実際の幅で描いたもので、見えるように最小幅を 1 px にしています。'}
       </>
     ),
     tip: (i: number, a: number, b: number) => `PD + 物理更新 ${i}: ${a}–${b} ms`,
