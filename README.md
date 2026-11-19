@@ -16,14 +16,18 @@ Status: all 5 chapters are written. Content lives in `src/content/` (`tick.ts`, 
 
 - Every number has a source: a paper, official documentation, or a measured result from one of the author's repositories (`microduck-rl`, `so-arm100-rl`, `so-arm100-il`, `so-arm100-vla`).
 - A stage with no measurement says "not measured". No estimates.
+- English and Japanese: each content file has a Japanese twin (`tick.ja.ts` …) with the same exports. The build fails if a twin drops an export or changes a shape, and `src/content/parity.test.ts` fails if a number, id or reference differs. The EN / 日本語 switch sits in the header; the choice is saved in the browser.
 
 ## Run
 
 ```bash
 npm install
 npm run dev     # local dev server
+npm test        # unit tests: QoS checker, PPO clip math, routing, EN/JA parity
 npm run build   # type check + static build into dist/
 ```
+
+CI (`.github/workflows/ci.yml`) runs lint, tests and the build on every push to `main`.
 
 Stack: Vite, React, TypeScript. Static site, hash routing, inline SVG.
 

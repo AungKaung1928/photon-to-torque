@@ -104,37 +104,72 @@ const RANK_REL: Record<Reliability, number> = { best_effort: 0, reliable: 1 }
 const RANK_DUR: Record<Durability, number> = { volatile: 0, transient_local: 1 }
 const RANK_LIV: Record<Liveliness, number> = { automatic: 0, manual_by_topic: 1 }
 
-function duration(name: string, offered: number | null, requested: number | null): PolicyResult {
+// Every user-visible string checkQos returns. English below; dds.ja.ts supplies the Japanese twin.
+export interface QosText {
+  reliability: string
+  durability: string
+  deadline: string
+  liveliness: string
+  lease: string
+  noLimit: string
+  requestedNothing: (req: number) => string
+  withinRequest: (offered: number, req: number) => string
+  longerThanRequest: (offered: number, req: number) => string
+  relOk: string
+  relBlocked: string
+  durStored: string
+  durNewOnly: string
+  durBlocked: string
+  livOk: string
+  livBlocked: string
+}
+
+export const qosText: QosText = {
+  reliability: 'Reliability',
+  durability: 'Durability',
+  deadline: 'Deadline',
+  liveliness: 'Liveliness',
+  lease: 'Lease duration',
+  noLimit: 'The subscription requests no limit.',
+  requestedNothing: (req) => `The subscription requests ${req} ms, the publisher promises nothing.`,
+  withinRequest: (offered, req) => `Offered ${offered} ms is within the requested ${req} ms.`,
+  longerThanRequest: (offered, req) => `Offered ${offered} ms is longer than the requested ${req} ms.`,
+  relOk: 'The publisher offers at least what the subscription asks for.',
+  relBlocked: 'The subscription asks for reliable; the publisher only offers best effort.',
+  durStored: 'Late joiners also get stored messages.',
+  durNewOnly: 'New messages only.',
+  durBlocked: 'The subscription asks for stored messages; the publisher keeps none.',
+  livOk: 'Compatible kinds.',
+  livBlocked: 'The subscription asks for manual by topic; the publisher is automatic.',
+}
+
+function duration(name: string, offered: number | null, requested: number | null, t: QosText): PolicyResult {
   // Table in the QoS docs: default/default yes, default/x no, x/default yes, x/y yes when y >= x.
-  if (requested === null) return { policy: name, ok: true, why: 'The subscription requests no limit.' }
-  if (offered === null)
-    return { policy: name, ok: false, why: `The subscription requests ${requested} ms, the publisher promises nothing.` }
+  if (requested === null) return { policy: name, ok: true, why: t.noLimit }
+  if (offered === null) return { policy: name, ok: false, why: t.requestedNothing(requested) }
   return requested >= offered
-    ? { policy: name, ok: true, why: `Offered ${offered} ms is within the requested ${requested} ms.` }
-    : { policy: name, ok: false, why: `Offered ${offered} ms is longer than the requested ${requested} ms.` }
+    ? { policy: name, ok: true, why: t.withinRequest(offered, requested) }
+    : { policy: name, ok: false, why: t.longerThanRequest(offered, requested) }
 }
 
 // Request vs offered: a policy is compatible when the request is no stricter than the offer.
-export function checkQos(pub: QosSide, sub: QosSide): PolicyResult[] {
+export function checkQos(pub: QosSide, sub: QosSide, t: QosText = qosText): PolicyResult[] {
   return [
     RANK_REL[sub.reliability] <= RANK_REL[pub.reliability]
-      ? { policy: 'Reliability', ok: true, why: 'The publisher offers at least what the subscription asks for.' }
-      : { policy: 'Reliability', ok: false, why: 'The subscription asks for reliable; the publisher only offers best effort.' },
+      ? { policy: t.reliability, ok: true, why: t.relOk }
+      : { policy: t.reliability, ok: false, why: t.relBlocked },
     RANK_DUR[sub.durability] <= RANK_DUR[pub.durability]
       ? {
-          policy: 'Durability',
+          policy: t.durability,
           ok: true,
-          why:
-            pub.durability === 'transient_local' && sub.durability === 'transient_local'
-              ? 'Late joiners also get stored messages.'
-              : 'New messages only.',
+          why: pub.durability === 'transient_local' && sub.durability === 'transient_local' ? t.durStored : t.durNewOnly,
         }
-      : { policy: 'Durability', ok: false, why: 'The subscription asks for stored messages; the publisher keeps none.' },
-    duration('Deadline', pub.deadlineMs, sub.deadlineMs),
+      : { policy: t.durability, ok: false, why: t.durBlocked },
+    duration(t.deadline, pub.deadlineMs, sub.deadlineMs, t),
     RANK_LIV[sub.liveliness] <= RANK_LIV[pub.liveliness]
-      ? { policy: 'Liveliness', ok: true, why: 'Compatible kinds.' }
-      : { policy: 'Liveliness', ok: false, why: 'The subscription asks for manual by topic; the publisher is automatic.' },
-    duration('Lease duration', pub.leaseMs, sub.leaseMs),
+      ? { policy: t.liveliness, ok: true, why: t.livOk }
+      : { policy: t.liveliness, ok: false, why: t.livBlocked },
+    duration(t.lease, pub.leaseMs, sub.leaseMs, t),
   ]
 }
 

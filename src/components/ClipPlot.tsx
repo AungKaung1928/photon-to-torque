@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { PointerEvent } from 'react'
 import { config } from '../content/ppo'
 import { SourceList } from './SourceList'
+import { clipObjective, clipGradient } from '../lib/clip'
+import { useLang } from '../i18n'
 
 const W = 300
 const H = 190
@@ -11,16 +13,36 @@ const EPS = config.clip
 const LO = 1 - EPS
 const HI = 1 + EPS
 
-// PPO clipped surrogate for one sample with advantage A (paper eq. 7).
-function objective(r: number, a: number) {
-  const clipped = Math.min(Math.max(r, LO), HI)
-  return Math.min(r * a, clipped * a)
-}
+const objective = (r: number, a: number) => clipObjective(r, a, EPS)
+const gradient = (r: number, a: number) => clipGradient(r, a, EPS)
 
-// d objective / d r: zero where the clipped branch is the active minimum.
-function gradient(r: number, a: number) {
-  if (a > 0) return r > HI ? 0 : a
-  return r < LO ? 0 : a
+const TEXT = {
+  en: {
+    plotLabel: (title: string) => `${title}: objective against ratio r`,
+    objective: 'objective',
+    sep: ', ',
+    gradient: 'gradient',
+    clipped: ' (clipped: this sample stops pushing)',
+    ratio: 'Ratio r = π_new / π_old:',
+    band: `Shaded band: [${LO}, ${HI}] for ε = ${EPS}. Drag the slider or move over a plot.`,
+    good: 'Good action (A = +1)',
+    bad: 'Bad action (A = −1)',
+    note: 'Read it this way. A good action stops earning credit once it is already 20% more likely than before. If an update made a bad action more likely (r above 1), the loss keeps its full gradient however large r gets, so that mistake is always pushed back.',
+    source: 'Schulman et al. 2017, eq. 7 and figure 1',
+  },
+  ja: {
+    plotLabel: (title: string) => `${title}: 比率 r に対する目的関数`,
+    objective: '目的関数',
+    sep: '、',
+    gradient: '勾配',
+    clipped: '（クリップ: このサンプルは押すのをやめます）',
+    ratio: '比率 r = π_new / π_old:',
+    band: `網掛けの帯: ε = ${EPS} のときの [${LO}, ${HI}]。スライダーをドラッグするか、グラフ上でポインターを動かしてください。`,
+    good: '良い行動 (A = +1)',
+    bad: '悪い行動 (A = −1)',
+    note: '読み方は次のとおりです。良い行動は、更新前より 20% 起こりやすくなった時点でそれ以上の評価を得なくなります。更新で悪い行動が起こりやすくなった場合 (r が 1 より大きい場合)、r がどれだけ大きくなっても損失は勾配をすべて保つため、その誤りは必ず押し戻されます。',
+    source: 'Schulman et al. 2017, 式 7 と図 1',
+  },
 }
 
 interface PanelProps {
@@ -34,6 +56,7 @@ interface PanelProps {
 }
 
 function Panel({ a, r, yMin, yMax, yTicks, title, onPick }: PanelProps) {
+  const T = TEXT[useLang()]
   const x = (v: number) => M.l + (v / X_MAX) * (W - M.l - M.r)
   const y = (v: number) => M.t + ((yMax - v) / (yMax - yMin)) * (H - M.t - M.b)
   const knots = [0, LO, HI, X_MAX]
@@ -49,7 +72,7 @@ function Panel({ a, r, yMin, yMax, yTicks, title, onPick }: PanelProps) {
     <figure className="clip-panel">
       <figcaption className="clip-title">{title}</figcaption>
       <div className="clip-svg">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title}: objective against ratio r`} onPointerMove={pick} onPointerDown={pick}>
+        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={T.plotLabel(title)} onPointerMove={pick} onPointerDown={pick}>
           <rect className="clip-band" x={x(LO)} y={M.t} width={x(HI) - x(LO)} height={H - M.t - M.b} />
           {yTicks.map((t) => (
             <g key={t}>
@@ -70,20 +93,21 @@ function Panel({ a, r, yMin, yMax, yTicks, title, onPick }: PanelProps) {
         </svg>
       </div>
       <p className="clip-read">
-        objective <b>{objective(r, a).toFixed(2)}</b>, gradient <b>{gradient(r, a)}</b>
-        {clipped ? ' (clipped: this sample stops pushing)' : ''}
+        {T.objective} <b>{objective(r, a).toFixed(2)}</b>{T.sep}{T.gradient} <b>{gradient(r, a)}</b>
+        {clipped ? T.clipped : ''}
       </p>
     </figure>
   )
 }
 
 export function ClipPlot() {
+  const T = TEXT[useLang()]
   const [r, setR] = useState(1.3)
   return (
     <div className="clip">
       <div className="clip-control">
         <label htmlFor="clip-r">
-          Ratio r = π_new / π_old: <b>{r.toFixed(2)}</b>
+          {T.ratio} <b>{r.toFixed(2)}</b>
         </label>
         <input
           id="clip-r"
@@ -94,18 +118,14 @@ export function ClipPlot() {
           value={r}
           onChange={(e) => setR(Number(e.target.value))}
         />
-        <span className="muted">Shaded band: [{LO}, {HI}] for ε = {EPS}. Drag the slider or move over a plot.</span>
+        <span className="muted">{T.band}</span>
       </div>
       <div className="clip-panels">
-        <Panel a={1} r={r} yMin={0} yMax={1.4} yTicks={[0, 0.4, 0.8, 1.2]} title="Good action (A = +1)" onPick={setR} />
-        <Panel a={-1} r={r} yMin={-2} yMax={0} yTicks={[-2, -1.2, -0.8, 0]} title="Bad action (A = −1)" onPick={setR} />
+        <Panel a={1} r={r} yMin={0} yMax={1.4} yTicks={[0, 0.4, 0.8, 1.2]} title={T.good} onPick={setR} />
+        <Panel a={-1} r={r} yMin={-2} yMax={0} yTicks={[-2, -1.2, -0.8, 0]} title={T.bad} onPick={setR} />
       </div>
-      <p className="panel-note">
-        Read it this way. A good action stops earning credit once it is already 20% more likely than before. If an
-        update made a bad action more likely (r above 1), the loss keeps its full gradient however large r gets, so
-        that mistake is always pushed back.
-      </p>
-      <SourceList sources={[{ label: 'Schulman et al. 2017, eq. 7 and figure 1', ref: 'arXiv:1707.06347' }]} />
+      <p className="panel-note">{T.note}</p>
+      <SourceList sources={[{ label: T.source, ref: 'arXiv:1707.06347' }]} />
     </div>
   )
 }

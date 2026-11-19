@@ -1,4 +1,5 @@
 import type { Source } from '../content/tick'
+import { useLang } from '../i18n'
 
 function href(ref: string): string | null {
   if (ref.startsWith('http')) return ref
@@ -7,9 +8,15 @@ function href(ref: string): string | null {
   return null
 }
 
+const NO_SOURCE = {
+  en: 'No source yet, so this stage shows no number.',
+  ja: 'まだ出典がないため、このステージには数値を表示しません。',
+}
+
 export function SourceList({ sources }: { sources: Source[] }) {
+  const lang = useLang()
   if (sources.length === 0) {
-    return <p className="muted">No source yet, so this stage shows no number.</p>
+    return <p className="muted">{NO_SOURCE[lang]}</p>
   }
   return (
     <ul className="sources">

@@ -1,4 +1,10 @@
 import type { Stage } from '../content/tick'
+import { useLang } from '../i18n'
+
+const TEXT = {
+  en: { noNumber: ', no number', measured: 'has a number with a source', unmeasured: 'no number' },
+  ja: { noNumber: '、数値なし', measured: '出典付きの数値あり', unmeasured: '数値なし' },
+}
 
 const SIZE = 320
 const C = SIZE / 2
@@ -21,6 +27,7 @@ interface Props {
 
 // Clockwise loop: the last node feeds the first node of the next cycle.
 export function StageRing({ stages, current, route, unit, label, loopNote }: Props) {
+  const T = TEXT[useLang()]
   const n = stages.length
   const stage = stages[current]
   return (
@@ -49,7 +56,7 @@ export function StageRing({ stages, current, route, unit, label, loopNote }: Pro
                 id={`ring-${route}-${i + 1}`}
                 href={`#/${route}/${i + 1}`}
                 className={`ring-node ${state}`}
-                aria-label={`${unit} ${i + 1}: ${s.title}${s.budget ? '' : ', no number'}`}
+                aria-label={`${unit} ${i + 1}: ${s.title}${s.budget ? '' : T.noNumber}`}
                 aria-current={i === current ? 'step' : undefined}
               >
                 <circle cx={p.x} cy={p.y} r={NODE_R} />
@@ -69,10 +76,10 @@ export function StageRing({ stages, current, route, unit, label, loopNote }: Pro
       </div>
       <figcaption className="ring-legend">
         <span>
-          <i className="key measured" /> has a number with a source
+          <i className="key measured" /> {T.measured}
         </span>
         <span>
-          <i className="key unmeasured" /> no number
+          <i className="key unmeasured" /> {T.unmeasured}
         </span>
         <span>{loopNote}</span>
       </figcaption>

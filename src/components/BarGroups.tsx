@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useLang } from '../i18n'
 
 // Grouped horizontal bars on a 0–1 scale, two series per row, with a table view.
 export interface BarSeries {
@@ -32,6 +33,8 @@ interface Props {
 }
 
 export function BarGroups({ id, series, rows, unit, rowHeader, digits, caption }: Props) {
+  const lang = useLang()
+  const T = { en: { showTable: 'Show as table' }, ja: { showTable: '表で見る' } }[lang]
   return (
     <figure className="gap">
       <div className="legend" aria-hidden="true">
@@ -82,7 +85,7 @@ export function BarGroups({ id, series, rows, unit, rowHeader, digits, caption }
       </div>
 
       <details className="table-view">
-        <summary id={`${id}-table-toggle`}>Show as table</summary>
+        <summary id={`${id}-table-toggle`}>{T.showTable}</summary>
         <div className="table-scroll">
           <table>
             <thead>
