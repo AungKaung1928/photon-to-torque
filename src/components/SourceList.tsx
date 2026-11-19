@@ -8,6 +8,9 @@ function href(ref: string): string | null {
   return null
 }
 
+// Citations stay in English on the Japanese page; mark them so screen readers switch voice (WCAG 3.1.2).
+const JA_CHARS = /[\u3040-\u30ff\u4e00-\u9fff]/
+
 const NO_SOURCE = {
   en: 'No source yet, so this stage shows no number.',
   ja: 'まだ出典がないため、このステージには数値を表示しません。',
@@ -22,14 +25,15 @@ export function SourceList({ sources }: { sources: Source[] }) {
     <ul className="sources">
       {sources.map((s) => {
         const url = href(s.ref)
+        const labelLang = lang === 'ja' && !JA_CHARS.test(s.label) ? 'en' : undefined
         return (
           <li key={s.label + s.ref}>
             {url ? (
-              <a href={url} target="_blank" rel="noreferrer">
+              <a href={url} target="_blank" rel="noreferrer" lang={labelLang}>
                 {s.label}
               </a>
             ) : (
-              <span>{s.label}</span>
+              <span lang={labelLang}>{s.label}</span>
             )}
             {!url && <code className="ref">{s.ref}</code>}
             {url && s.ref.startsWith('arXiv') && <code className="ref">{s.ref}</code>}
