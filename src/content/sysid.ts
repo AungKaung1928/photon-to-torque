@@ -35,7 +35,7 @@ export const steps: Stage[] = [
     id: 'replay',
     title: 'Replay the commands in sim',
     what: 'Feed each real command to the sim arm for one frame, start from the measured pose, and compare the sim follower with the real one, joint by joint.',
-    budget: 'A trajectory produced by the sim itself replays with zero error; a different gain or delay does not. 10 real episodes replay in 0.7 s on one core.',
+    budget: 'A trajectory produced by the sim itself replays with zero error; a different gain or delay does not. 10 real episodes replay in 0.7 s on one core. CI replays held-out episode 40 on every push and fails above 0.37°.',
     failure: 'The real follower trails its command by 3 frames (100 ms). Adding that as a command delay makes the sim worse, because the simulated servo already lags that much.',
     sources: [simReadme],
   },
