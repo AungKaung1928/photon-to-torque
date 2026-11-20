@@ -1340,3 +1340,10 @@ li.bad .r-tag {
 .replay .num {
   font-variant-numeric: tabular-nums;
 }
+
+@media (max-width: 600px) {
+  /* the 640-unit replay plot is drawn at about 0.55 scale on a phone */
+  .replay .clip-svg .axis {
+    font-size: 20px;
+  }
+}
