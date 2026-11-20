@@ -11,6 +11,7 @@ import { QosChecker, ProfilesTable } from './components/QosChecker'
 import { BarGroups } from './components/BarGroups'
 import { SourceList } from './components/SourceList'
 import { ChunkTimer } from './components/ChunkTimer'
+import { LatencyLadder } from './components/LatencyLadder'
 import { SpreadPlot } from './components/SpreadPlot'
 import { ReplayPlot } from './components/ReplayPlot'
 import { CONTENT, useContent } from './content'
@@ -268,6 +269,15 @@ function VlaPanels() {
             : 'A 450M-parameter VLA, timed on this project’s CPU. Drag the chunk length and watch how long the arm waits.'}
         </p>
         <ChunkTimer />
+      </section>
+      <section className="panel" aria-labelledby="ladder-h">
+        <h2 id="ladder-h">{lang === 'ja' ? '同じ CPU で、マイクロ秒から秒まで' : 'Microseconds to seconds on one CPU'}</h2>
+        <p className="panel-lede">
+          {lang === 'ja'
+            ? 'このサイトの方策と検出器を同じノート PC の CPU で計測した結果を、制御周期と並べました。小さな方策は周期のごく一部しか使いませんが、VLA の 1 チャンクは周期の数十倍かかります。'
+            : 'The policies and the detector from these projects, timed on the same laptop CPU and set against the control period. The small policies use a sliver of it; one VLA chunk takes dozens of periods.'}
+        </p>
+        <LatencyLadder />
       </section>
     </>
   )
