@@ -1262,3 +1262,81 @@ li.bad .r-tag {
 .chunk-note {
   font-size: 0.8125rem;
 }
+
+/* Chapter 6 replay plot */
+.replay-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  align-items: flex-start;
+}
+
+.replay-joint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.replay-joint legend {
+  padding: 0;
+  margin-block-end: 4px;
+}
+
+.rp-cmd,
+.rp-real,
+.rp-sim {
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+}
+
+.rp-cmd {
+  stroke: var(--ink-3);
+  stroke-dasharray: 4 3;
+}
+
+.rp-real {
+  stroke: var(--series-1);
+}
+
+.rp-sim {
+  stroke: var(--series-2);
+}
+
+.replay-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.replay-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.replay-legend li::before {
+  content: '';
+  width: 18px;
+  border-top: 2px solid var(--series-1);
+}
+
+.replay-legend .rp-key-cmd::before {
+  border-top: 2px dashed var(--ink-3);
+}
+
+.replay-legend .rp-key-sim::before {
+  border-top-color: var(--series-2);
+}
+
+.replay .num {
+  font-variant-numeric: tabular-nums;
+}

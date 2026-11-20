@@ -11,6 +11,7 @@ import { QosChecker, ProfilesTable } from './components/QosChecker'
 import { BarGroups } from './components/BarGroups'
 import { SourceList } from './components/SourceList'
 import { ChunkTimer } from './components/ChunkTimer'
+import { ReplayPlot } from './components/ReplayPlot'
 import { CONTENT, useContent } from './content'
 import type { Content } from './content'
 import { LangContext, initialLang, saveLang, useLang } from './i18n'
@@ -271,6 +272,51 @@ function VlaPanels() {
   )
 }
 
+function SysidPanels() {
+  const lang = useLang()
+  const { fit } = useContent().sysid
+  return (
+    <>
+      <section className="panel" aria-labelledby="replay-h">
+        <h2 id="replay-h">{lang === 'ja' ? '実機の指令をシミュレーションで再生する' : 'Real commands, replayed in sim'}</h2>
+        <p className="panel-lede">
+          {lang === 'ja'
+            ? '実機アームの 1 エピソードです。指令、実機のフォロワー、フィットしたサーボを持つシミュレーションのフォロワーを重ねています。遅延をドラッグして、誤差がどう動くかを見てください。'
+            : 'One episode of the real arm: the command, the real follower, and the sim follower with the fitted servo. Drag the delay and watch the error.'}
+        </p>
+        <ReplayPlot />
+      </section>
+      <section className="panel" aria-labelledby="fit-h">
+        <h2 id="fit-h">{lang === 'ja' ? 'ホールドアウトのエピソードでの誤差' : 'Error on held-out episodes'}</h2>
+        <figure className="diag">
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">{lang === 'ja' ? 'シミュレーションの設定' : 'Sim setting'}</th>
+                  <th scope="col" className="num">{lang === 'ja' ? '平均誤差 (度)' : 'Mean error (deg)'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fit.rows.map((r) => (
+                  <tr key={r.err}>
+                    <th scope="row">{r.label}</th>
+                    <td className="num">{r.err.toFixed(3)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <figcaption>
+            {fit.caveat}
+            <SourceList sources={fit.sources} />
+          </figcaption>
+        </figure>
+      </section>
+    </>
+  )
+}
+
 const UI = {
   en: {
     chapters: 'Chapters',
@@ -412,6 +458,29 @@ function chapters(lang: Lang, c: Content): Chapter[] {
         </>
       ),
       panels: VlaPanels,
+    },
+    {
+      n: 6,
+      route: 'sysid',
+      title: ja ? '実機に合わせるシステム同定' : 'System ID on a real arm',
+      stages: c.sysid.steps,
+      unit: ja ? 'ステップ' : 'Step',
+      budgetLabel: ja ? '計測値' : 'Measured',
+      restartLabel: ja ? '最初のステップへ' : 'Back to the first step',
+      ringLabel: ja ? 'システム同定のステップ(順番)' : 'Steps of system identification, in order',
+      loopNote: ja
+        ? 'ステップ 6 の結果が悪ければ、ステップ 2 から別のパラメータでやり直します。'
+        : 'If step 6 shows a gap that matters, go back to step 2 with the parameter it points at.',
+      intro: ja ? (
+        <>
+          公開されている実機アームの記録に、シミュレーションのサーボを合わせます。どのパラメータが決まり、どれが決まらないか、そしてそれが方策に効くかを見ます。{c.sysid.sysid.example}
+        </>
+      ) : (
+        <>
+          Fit the simulated servo to a public recording of a real arm: which parameters the data pins down, which it does not, and whether the fit changes how a policy does. {c.sysid.sysid.example}
+        </>
+      ),
+      panels: SysidPanels,
     },
   ]
 }
