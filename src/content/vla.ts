@@ -5,6 +5,7 @@ import type { Source, Stage } from './tick'
 
 const il: Source = { label: 'so-arm100-il README, ACTLite against single-step cloning', ref: 'so-arm100-il/README.md' }
 const vlaReadme: Source = { label: 'so-arm100-vla README, SmolVLA-base timed on CPU', ref: 'so-arm100-vla/README.md' }
+const vlaEdge: Source = { label: 'so-arm100-vla README, edge section: 1 camera, three backends interleaved', ref: 'so-arm100-vla/README.md' }
 const act: Source = { label: 'Zhao et al. 2023, ACT, Algorithm 2', ref: 'arXiv:2304.13705' }
 const lerobotAct: Source = {
   label: 'LeRobot 0.6.1, ACTTemporalEnsembler and ACT config defaults',
@@ -62,8 +63,8 @@ export const steps: Stage[] = [
     title: 'Fit inference into the chunk',
     what: 'Without ensembling, the arm runs one chunk open loop and then needs the next. If inference takes longer than the chunk lasts, the arm stops and waits.',
     budget: 'SmolVLA-base: 3.16 s per 50-step chunk on 8 CPU threads (p50, n = 130). The chunk lasts 2.5 s at 20 Hz.',
-    failure: 'Run one after the other, the arm would wait about 3 s for every 2.5 s of motion. On this CPU it is not a real-time controller, whatever its success rate.',
-    sources: [vlaReadme],
+    failure: 'Run one after the other, the arm would wait about 3 s for every 2.5 s of motion. On this CPU it is not a real-time controller, whatever its success rate. Measured fixes, 1 camera, one process: PyTorch 1,848 ms, OpenVINO FP32 1,398 ms, OpenVINO with INT8 weights 733 ms p50 (937 ms p99). Only INT8 leaves real margin, and its effect on success is not measured yet.',
+    sources: [vlaReadme, vlaEdge],
   },
   {
     id: 'evaluate',

@@ -5,6 +5,7 @@ export { smolvla } from './vla'
 
 const il: Source = { label: 'so-arm100-il README, ACTLite against single-step cloning', ref: 'so-arm100-il/README.md' }
 const vlaReadme: Source = { label: 'so-arm100-vla README, SmolVLA-base timed on CPU', ref: 'so-arm100-vla/README.md' }
+const vlaEdge: Source = { label: 'so-arm100-vla README, edge section: 1 camera, three backends interleaved', ref: 'so-arm100-vla/README.md' }
 const act: Source = { label: 'Zhao et al. 2023, ACT, Algorithm 2', ref: 'arXiv:2304.13705' }
 const lerobotAct: Source = {
   label: 'LeRobot 0.6.1, ACTTemporalEnsembler and ACT config defaults',
@@ -62,8 +63,8 @@ export const steps: Stage[] = [
     title: '推論をチャンク内に収める',
     what: 'アンサンブルなしでは、アームは 1 チャンクをオープンループで実行し、その後に次のチャンクが必要になります。推論がチャンクの継続時間より長くかかると、アームは止まって待ちます。',
     budget: 'SmolVLA-base: 8 CPU スレッドで 50 ステップのチャンク 1 個あたり 3.16 s（p50、n = 130）。チャンクは 20 Hz で 2.5 s 続きます。',
-    failure: '推論と動作を順番に実行すると、アームは 2.5 s の動作ごとに約 3 s 待つことになります。この CPU では、成功率がどうであれリアルタイムコントローラにはなりません。',
-    sources: [vlaReadme],
+    failure: '推論と動作を順番に実行すると、アームは 2.5 s の動作ごとに約 3 s 待つことになります。この CPU では、成功率がどうであれリアルタイムコントローラにはなりません。計測した対策（カメラ 1 台、同一プロセス）: PyTorch 1,848 ms、OpenVINO FP32 1,398 ms、INT8 重みの OpenVINO 733 ms（p50、p99 937 ms）。十分な余裕があるのは INT8 だけで、成功率への影響はまだ計測していません。',
+    sources: [vlaReadme, vlaEdge],
   },
   {
     id: 'evaluate',
