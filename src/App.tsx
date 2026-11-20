@@ -264,8 +264,8 @@ function VlaPanels() {
         </h2>
         <p className="panel-lede">
           {lang === 'ja'
-            ? '500M パラメータの VLA を、このプロジェクトの CPU で計測しました。チャンク長をドラッグして、アームがどれだけ待つかを見てください。'
-            : 'A 500M-parameter VLA, timed on this project’s CPU. Drag the chunk length and watch how long the arm waits.'}
+            ? '450M パラメータの VLA を、このプロジェクトの CPU で計測しました。チャンク長をドラッグして、アームがどれだけ待つかを見てください。'
+            : 'A 450M-parameter VLA, timed on this project’s CPU. Drag the chunk length and watch how long the arm waits.'}
         </p>
         <ChunkTimer />
       </section>
