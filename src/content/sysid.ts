@@ -51,8 +51,8 @@ export const steps: Stage[] = [
     id: 'spread',
     title: 'Turn the fit into ranges',
     what: 'Refit each episode on its own. The spread across episodes is evidence for a randomisation range, and the range the policy trained with can be checked against it.',
-    budget: 'Gain 32.6–38.7 (10th–90th percentile of 20 episodes): inside the training range of 30–70. Joint friction 0.22–0.28: outside the training range of 0.05–0.2.',
-    failure: 'One arm and one task. The spread measures episode-to-episode variation, not arm-to-arm.',
+    budget: 'Gain 32.6–38.7 (10th–90th percentile of 20 episodes): inside the training range of 30–70. Joint friction 0.22–0.28: outside the training range of 0.05–0.2. A wider preset, 0.05–0.35, covers all 20 episodes.',
+    failure: 'One arm and one task. The spread measures episode-to-episode variation, not arm-to-arm. No policy has been trained on the wider preset yet.',
     sources: [simReadme],
   },
   {

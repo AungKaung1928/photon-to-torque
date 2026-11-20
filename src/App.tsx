@@ -11,6 +11,7 @@ import { QosChecker, ProfilesTable } from './components/QosChecker'
 import { BarGroups } from './components/BarGroups'
 import { SourceList } from './components/SourceList'
 import { ChunkTimer } from './components/ChunkTimer'
+import { SpreadPlot } from './components/SpreadPlot'
 import { ReplayPlot } from './components/ReplayPlot'
 import { CONTENT, useContent } from './content'
 import type { Content } from './content'
@@ -312,6 +313,15 @@ function SysidPanels() {
             <SourceList sources={fit.sources} />
           </figcaption>
         </figure>
+      </section>
+      <section className="panel" aria-labelledby="spread-h">
+        <h2 id="spread-h">{lang === 'ja' ? 'ばらつきは学習範囲に入っているか' : 'Is the spread inside the training range?'}</h2>
+        <p className="panel-lede">
+          {lang === 'ja'
+            ? '20 エピソードを 1 つずつフィットした結果と、方策の学習に使ったランダム化の箱です。摩擦の上限をドラッグして、何個が内側に入るかを見てください。'
+            : 'Twenty episodes, each fitted alone, against the randomisation box the policy trains with. Drag the friction cap and count how many fall inside.'}
+        </p>
+        <SpreadPlot />
       </section>
     </>
   )

@@ -1347,3 +1347,46 @@ li.bad .r-tag {
     font-size: 20px;
   }
 }
+
+/* Chapter 6 spread plot */
+.sp-box {
+  fill: var(--series-1);
+  fill-opacity: 0.08;
+  stroke: var(--series-1);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+}
+
+.sp-pt {
+  fill: var(--bg);
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+}
+
+.sp-pt.in {
+  fill: var(--series-1);
+  stroke: var(--series-1);
+}
+
+.sp-cell {
+  fill: none;
+  stroke: var(--series-2);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.replay-legend .sp-key-pt::before {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--ink-2);
+  border-radius: 50%;
+}
+
+.replay-legend .sp-key-box::before {
+  border-top: 2px dashed var(--series-1);
+}
+
+.replay-legend .sp-key-cell::before {
+  border-top: 3px solid var(--series-2);
+  width: 12px;
+}
