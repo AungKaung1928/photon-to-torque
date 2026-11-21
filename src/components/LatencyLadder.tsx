@@ -63,11 +63,12 @@ export function LatencyLadder() {
           <li key={r.id}>
             <p className="ld-label">
               {r.model} · {r.backend} · <span className="ld-nowrap">{T.threads(r.threads)}</span>
+              {/* Each figure stays whole; the line may break between figures at phone width. */}
               <span className="num">
                 {' '}
-                {ms(r.p50Ms)} ms
-                {r.p99Ms !== null ? ` (p99 ${ms(r.p99Ms)})` : ''}
-                {r.periodMs ? ` · ${T.share(pct(periodShare(r.p50Ms, r.periodMs)))}` : ''}
+                <span className="ld-nowrap">{ms(r.p50Ms)} ms</span>
+                {r.p99Ms !== null && <> <span className="ld-nowrap">(p99 {ms(r.p99Ms)})</span></>}
+                {r.periodMs ? <> <span className="ld-nowrap">· {T.share(pct(periodShare(r.p50Ms, r.periodMs)))}</span></> : ''}
               </span>
             </p>
             <svg viewBox={`0 0 ${W} ${BAR_H}`} preserveAspectRatio="none" aria-hidden="true">
