@@ -728,7 +728,7 @@ export default function App() {
                   aria-current={id === stepPanel ? 'true' : undefined}
                   onClick={() => document.getElementById(id)?.scrollIntoView({ block: 'start' })}
                 >
-                  {PANEL_TITLES[id][lang]}
+                  {""}
                 </button>
               ))}
             </nav>
