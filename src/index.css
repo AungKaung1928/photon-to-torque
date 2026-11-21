@@ -1,6 +1,7 @@
 /* Layout: instrument bench. Stage ring left, stage sheet right, to-scale strips below. Hairlines and a surface ladder, no shadows. */
 :root {
   --bg: #ffffff;
+  --ground: #eef2f7;
   --surface: #f5f7fa;
   --surface-2: #e9eef5;
   --ink: #13203a;
@@ -37,6 +38,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --bg: #0c1524;
+    --ground: #080e19;
     --surface: #121d30;
     --surface-2: #1a273d;
     --ink: #e7ecf4;
@@ -59,6 +61,7 @@
 
 :root[data-theme='dark'] {
   --bg: #0c1524;
+  --ground: #080e19;
   --surface: #121d30;
   --surface-2: #1a273d;
   --ink: #e7ecf4;
@@ -1602,4 +1605,40 @@ li.bad .r-tag {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--accent);
+}
+
+/* Panes: a tinted ground with the step area and every evidence panel as its own framed sheet. */
+body {
+  background: var(--ground);
+}
+main {
+  gap: 16px;
+}
+.intro {
+  padding-block: 8px;
+}
+.bench {
+  gap: 16px;
+  align-items: stretch;
+}
+.ring,
+.panel,
+.stage,
+.overview a {
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+.ring {
+  justify-content: center;
+  padding: 24px 16px;
+}
+.panel {
+  padding: 24px;
+}
+@media (max-width: 700px) {
+  .panel,
+  .stage {
+    padding: 16px;
+  }
 }
