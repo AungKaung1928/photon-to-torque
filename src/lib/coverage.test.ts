@@ -23,4 +23,10 @@ describe('DR range coverage of the real per-episode fits', () => {
     expect(n).toBeGreaterThan(0)
     expect(n).toBeLessThan(20)
   })
+
+  it('a fit exactly on a range edge counts as covered (both ends inclusive)', () => {
+    const edge = { kp: NOMINAL.kp * 0.5, frictionloss: NOMINAL.frictionloss * 2.0 }
+    expect(covered([edge], NOMINAL, [0.5, 1.4], [0.5, 2.0])).toBe(1)
+    expect(covered([edge], NOMINAL, [0.6, 1.4], [0.5, 2.0])).toBe(0)
+  })
 })
