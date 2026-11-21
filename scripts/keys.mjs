@@ -126,13 +126,14 @@ try {
   const SLIDER = `document.querySelector('[aria-labelledby=replay-h] input[type=range]')`
   const before = await js(`(() => { const r = ${SLIDER}; r.focus(); return r.value })()`)
   for (let i = 0; i < 3; i++) await press('ArrowRight')
-  const after = await js(`[location.hash, ${SLIDER}.value, document.querySelector('[aria-labelledby=replay-h] .clip-read b:last-of-type').textContent]`)
+  const after = await js(`[location.hash, ${SLIDER}.value, document.querySelector('[aria-labelledby=replay-h] .clip-read b:last-of-type').textContent, document.querySelector('#tag-sysid text')?.textContent]`)
   const bad = []
   if (after[0] !== '#/sysid/3') bad.push(`step changed to ${after[0]}`)
   if (Number(after[1]) !== Number(before) + 3) bad.push(`slider at ${after[1]}, expected ${Number(before) + 3}`)
   const want3 = `${errByDelay[Number(before) + 3].toFixed(2)}°`
   if (after[2] !== want3) bad.push(`readout shows ${after[2]}, expected ${want3}`)
-  report('arrow keys inside a slider move it and its readout', bad)
+  if (!after[3]?.endsWith(want3)) bad.push(`diagram tag on the sim node shows ${after[3]}, expected … ${want3}`)
+  report('arrow keys inside a slider move it, its readout and the diagram tag', bad)
 
   // A pointer drag to the slider's right end sets the largest delay and its exported error.
   await open('#/sysid/3')

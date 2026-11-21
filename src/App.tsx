@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Stage } from './content/tick'
 import { SystemDiagram } from './components/SystemDiagram'
+import { DiagramTagContext, type DiagramTag } from './diagramTag'
 import { StageRing } from './components/StageRing'
 import { StageCard } from './components/StageCard'
 import { TickTimeline } from './components/TickTimeline'
@@ -592,6 +593,7 @@ function go(n: number, index: number) {
 export default function App() {
   const [{ n, index, home }, setPos] = useState(parseHash)
   const [lang, setLang] = useState<Lang>(initialLang)
+  const [tag, setTag] = useState<DiagramTag | null>(null)
   const list = chapters(lang, CONTENT[lang])
   const ch = list[n - 1]
   const ui = UI[lang]
@@ -704,6 +706,7 @@ export default function App() {
               position={`${ch.unit} ${index + 1} / ${ch.stages.length}`}
               title={ch.stages[index].title}
               what={ch.stages[index].what}
+              tag={tag?.route === ch.route ? tag : undefined}
             />
 
             <p className="intro-text">{ch.intro}</p>
@@ -769,7 +772,9 @@ export default function App() {
             </section>
 
             <StepPanelContext.Provider value={stepPanel}>
-              <Panels />
+              <DiagramTagContext.Provider value={setTag}>
+                <Panels />
+              </DiagramTagContext.Provider>
             </StepPanelContext.Provider>
           </main>
         )}

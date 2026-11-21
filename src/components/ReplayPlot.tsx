@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { DiagramTagContext } from '../diagramTag'
 import { replay } from '../data/replay'
 import { extent, linePath, meanAbsErr } from '../lib/replay'
 import { SourceList } from './SourceList'
@@ -49,6 +50,7 @@ export function ReplayPlot() {
   const T = TEXT[useLang()]
   const [joint, setJoint] = useState(0)
   const [delay, setDelay] = useState(0)
+  const pin = useContext(DiagramTagContext)
   const cmd = replay.command[joint]
   const real = replay.real[joint]
   const sim = replay.simByDelay[delay][joint]
@@ -87,7 +89,11 @@ export function ReplayPlot() {
             max={MAX_DELAY}
             step={1}
             value={delay}
-            onChange={(e) => setDelay(Number(e.target.value))}
+            onChange={(e) => {
+              const d = Number(e.target.value)
+              setDelay(d)
+              pin({ route: 'sysid', node: 'sim', text: `+${Math.round((d * 1000) / replay.fps)} ms → ${replay.meanErrByDelay[d].toFixed(2)}°` })
+            }}
           />
         </div>
       </div>

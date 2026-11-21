@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DIAGRAMS, KIND_LABEL, NODE_KINDS, type DiagramNode } from '../content/diagrams'
 import { useLang } from '../i18n'
+import type { DiagramTag } from '../diagramTag'
 
 interface Props {
   route: string
@@ -10,6 +11,7 @@ interface Props {
   position: string // e.g. 'Stage 1 of 8'
   title: string // title of the open step
   what: string // one or two lines: what happens in the open step
+  tag?: DiagramTag // live value from a panel slider, drawn right of its node (keep that cell empty)
 }
 
 const W = 132 // node box
@@ -36,7 +38,7 @@ function edgePoint(from: { x: number; y: number }, to: { x: number; y: number },
   return { x: cx + dx * s, y: cy + dy * s }
 }
 
-export function SystemDiagram({ route, stepIds, current, label, position, title, what }: Props) {
+export function SystemDiagram({ route, stepIds, current, label, position, title, what, tag }: Props) {
   const lang = useLang()
   const T = TEXT[lang]
   const d = DIAGRAMS[route]
@@ -108,6 +110,14 @@ export function SystemDiagram({ route, stepIds, current, label, position, title,
               </a>
             )
           })}
+          {tag && byId[tag.node] && (
+            <g className="sd-tag" id={`tag-${route}`}>
+              <rect x={box(byId[tag.node]).x + W + 8} y={box(byId[tag.node]).y + H / 2 - 11} width={W + 28} height={22} rx={11} />
+              <text x={box(byId[tag.node]).x + W * 1.5 + 22} y={box(byId[tag.node]).y + H / 2} dominantBaseline="central" textAnchor="middle">
+                {tag.text}
+              </text>
+            </g>
+          )}
         </svg>
       </div>
       <figcaption className="sd-caption" aria-live="polite">
