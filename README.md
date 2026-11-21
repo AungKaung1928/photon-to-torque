@@ -21,23 +21,19 @@ Status: 6 chapters are written. Content lives in `src/content/` (`tick.ts`, `ppo
 
 ## Run locally
 
-Needs Node.js 20.19+ or 22.12+ (required by Vite) and npm.
+Needs Node.js 20.19+ or 22.12+ and npm.
 
 ```bash
-git clone https://github.com/AungKaung1928/photon-to-torque.git
+git clone <this repo URL>
 cd photon-to-torque
-npm ci          # once after cloning: installs the exact versions in package-lock.json
-npm run dev     # starts the app
+npm ci          # first time only
+npm run dev     # then open http://localhost:5173
 ```
 
-Open the address `npm run dev` prints, usually http://localhost:5173, in a browser. The page reloads when a file changes. Ctrl+C in the terminal stops the server.
-
-Run every `npm` command from inside the `photon-to-torque` folder. From any other folder npm stops with `Could not read package.json`.
-
-That is all you need to read the app. The commands below are only for changing the code:
+Only when changing the code:
 
 ```bash
-npm run lint    # oxlint
+npm run lint
 npm test        # unit tests: QoS checker, PPO clip math, routing, EN/JA parity
 npm run build   # type check + static build into dist/
 ```
