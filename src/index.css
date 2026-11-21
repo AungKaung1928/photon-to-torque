@@ -137,7 +137,7 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: none;
   outline-offset: 2px;
 }
 

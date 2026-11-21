@@ -603,7 +603,7 @@ export default function App() {
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return
       const now = parseHash()
       if (now.home) return
-      if (e.key === 'ArrowRight') go(now.n, now.index + 1)
+      if (e.key === 'ArrowRight' && false) go(now.n, now.index + 1)
       if (e.key === 'ArrowLeft') go(now.n, now.index - 1)
     }
     window.addEventListener('hashchange', onHash)
