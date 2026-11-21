@@ -18,7 +18,9 @@ import { CONTENT, useContent } from './content'
 import type { Content } from './content'
 import { LangContext, initialLang, saveLang, useLang } from './i18n'
 import type { Lang } from './i18n'
-import { parseRoute, wrapIndex } from './lib/route'
+import { isHome, parseRoute, wrapIndex } from './lib/route'
+import { latency } from './data/latency'
+import { spread } from './data/spread'
 
 interface Chapter {
   n: number
@@ -31,6 +33,7 @@ interface Chapter {
   ringLabel: string
   loopNote: string
   intro: ReactNode
+  headline: { value: string; label: string } // the chapter's strongest sourced number, shown on the overview
   panels: () => ReactNode
 }
 
@@ -342,12 +345,22 @@ const UI = {
     chapters: 'Chapters',
     chapter: (n: number) => `Chapter ${n}`,
     language: 'Language',
+    overview: 'Overview',
+    tagline:
+      'Six short chapters on what happens between a sensor reading and a motor command. Every number comes from a measured run and names its source.',
+    start: 'Open chapter',
+    count: (n: number, unit: string) => `${n} ${unit.toLowerCase()}s`,
     foot: 'Every number on this page has a source. A stage without one says not measured.',
   },
   ja: {
     chapters: '章',
     chapter: (n: number) => `第 ${n} 章`,
     language: '表示言語',
+    overview: '全体図',
+    tagline:
+      'センサーの読み取りからモーター指令までに起きることを、6 つの短い章で追います。数値はすべて実測で、出典を示します。',
+    start: 'この章を開く',
+    count: (n: number, unit: string) => `${n} ${unit}`,
     foot: 'このページの数値にはすべて出典があります。出典のないステージは「未計測」と表示します。',
   },
 }
@@ -376,6 +389,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           budget, how it fails, and where the number comes from. {c.tick.tick.example}
         </>
       ),
+      headline: { value: `${latency.find((r) => r.id === 'duck-py')!.p50Ms.toFixed(3)} ms`, label: ja ? 'ポリシーの順伝播 (p50)。制御ティックは 20 ms' : 'policy forward pass (p50) inside a 20 ms tick' },
       panels: TickPanels,
     },
     {
@@ -401,6 +415,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           step shows the setting used, how it fails, and the source. {c.ppo.ppo.example}
         </>
       ),
+      headline: { value: (c.ppo.config.numEnvs * c.ppo.config.numSteps).toLocaleString('en-US'), label: ja ? 'PPO の更新 1 回に使う遷移数' : 'transitions in one PPO update' },
       panels: PpoPanels,
     },
     {
@@ -426,6 +441,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           step. {c.dds.dds.example}
         </>
       ),
+      headline: { value: '5', label: ja ? 'メッセージが届く前に一致が必要な QoS ポリシーの数' : 'QoS policies that must match before a message arrives' },
       panels: DdsPanels,
     },
     {
@@ -451,6 +467,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           simulated projects did, how the measurement fails, and the source. {c.sim2real.sim2real.example}
         </>
       ),
+      headline: { value: `${c.tick.latencyGap.rows[0].nominalTrained.success} → ${c.tick.latencyGap.rows[1].nominalTrained.success}`, label: ja ? '行動レイテンシ 3 ステップでの成功率 (シミュレーション)' : 'success rate with 3 steps of action latency (simulation)' },
       panels: Sim2RealPanels,
     },
     {
@@ -477,6 +494,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           what it costs when the model is large. {c.vla.vla.example}
         </>
       ),
+      headline: { value: `${Math.min(...latency.map((r) => r.p50Ms))} – ${Math.max(...latency.map((r) => r.p50Ms)).toLocaleString('en-US')} ms`, label: ja ? `1 台のノート PC の CPU で計測した ${latency.length} モデルの p50` : `p50 of ${latency.length} models on one laptop CPU` },
       panels: VlaPanels,
     },
     {
@@ -500,6 +518,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           Fit the simulated servo to a public recording of a real arm: which parameters the data pins down, which it does not, and whether the fit changes how a policy does. {c.sysid.sysid.example}
         </>
       ),
+      headline: { value: String(spread.length), label: ja ? '実機 SO-100 の記録から得たエピソードごとのサーボ同定' : 'per-episode servo fits from a real SO-100 recording' },
       panels: SysidPanels,
     },
   ]
@@ -510,7 +529,7 @@ const ROUTES = chapters('en', CONTENT.en)
 
 function parseHash() {
   const { ch, index } = parseRoute(window.location.hash, ROUTES)
-  return { n: ch.n, index }
+  return { n: ch.n, index, home: isHome(window.location.hash) }
 }
 
 function go(n: number, index: number) {
@@ -519,7 +538,7 @@ function go(n: number, index: number) {
 }
 
 export default function App() {
-  const [{ n, index }, setPos] = useState(parseHash)
+  const [{ n, index, home }, setPos] = useState(parseHash)
   const [lang, setLang] = useState<Lang>(initialLang)
   const list = chapters(lang, CONTENT[lang])
   const ch = list[n - 1]
@@ -532,6 +551,7 @@ export default function App() {
       const t = e.target as HTMLElement | null
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return
       const now = parseHash()
+      if (now.home) return
       if (e.key === 'ArrowRight') go(now.n, now.index + 1)
       if (e.key === 'ArrowLeft') go(now.n, now.index - 1)
     }
@@ -544,9 +564,9 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = `${ch.title} · Photon to Torque`
+    document.title = home ? 'Photon to Torque' : `${ch.title} · Photon to Torque`
     document.documentElement.lang = lang
-  }, [ch.title, lang])
+  }, [ch.title, home, lang])
 
   const pick = (l: Lang) => {
     setLang(l)
@@ -561,18 +581,20 @@ export default function App() {
     const ol = strip.current
     const link = ol?.querySelector<HTMLElement>('[aria-current="page"]')
     if (ol && link) ol.scrollLeft = link.offsetLeft - ol.offsetLeft - 16
-  }, [ch.n, lang])
+  }, [ch.n, home, lang])
 
   return (
     <LangContext.Provider value={lang}>
       <div className="page">
         <header className="masthead">
-          <p className="brand">Photon to Torque</p>
+          <a id="home-link" className="brand" href="#/" aria-current={home ? 'page' : undefined}>
+            Photon to Torque
+          </a>
           <nav aria-label={ui.chapters}>
             <ol className="chapters" ref={strip}>
               {list.map((c) => (
                 <li key={c.n} className="ready">
-                  <a id={`chapter-${c.n}`} href={`#/${c.route}/1`} aria-current={c.n === ch.n ? 'page' : undefined}>
+                  <a id={`chapter-${c.n}`} href={`#/${c.route}/1`} aria-current={!home && c.n === ch.n ? 'page' : undefined}>
                     <span className="ch-n">{c.n}</span> <span className="ch-title">{c.title}</span>
                   </a>
                 </li>
@@ -589,36 +611,61 @@ export default function App() {
           </div>
         </header>
 
-        <main>
-          <section className="intro">
-            <p className="eyebrow">{ui.chapter(ch.n)}</p>
-            <h1>{ch.title}</h1>
-            <p>{ch.intro}</p>
-          </section>
+        {home ? (
+          <main>
+            <section className="intro">
+              <p className="eyebrow">{ui.overview}</p>
+              <h1>Photon to Torque</h1>
+              <p>{ui.tagline}</p>
+            </section>
+            <ol className="overview">
+              {list.map((c) => (
+                <li key={c.n}>
+                  <a id={`card-${c.route}`} href={`#/${c.route}/1`}>
+                    <span className="eyebrow">
+                      {ui.chapter(c.n)} · {ui.count(c.stages.length, c.unit)}
+                    </span>
+                    <span className="ov-title">{c.title}</span>
+                    <span className="ov-value">{c.headline.value}</span>
+                    <span className="ov-label">{c.headline.label}</span>
+                    <span className="ov-go">{ui.start}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </main>
+        ) : (
+          <main>
+            <section className="intro">
+              <p className="eyebrow">{ui.chapter(ch.n)}</p>
+              <h1>{ch.title}</h1>
+              <p>{ch.intro}</p>
+            </section>
 
-          <section className="bench" aria-label={ch.ringLabel}>
-            <StageRing
-              stages={ch.stages}
-              current={index}
-              route={ch.route}
-              unit={ch.unit}
-              label={ch.ringLabel}
-              loopNote={ch.loopNote}
-            />
-            <StageCard
-              stage={ch.stages[index]}
-              index={index}
-              total={ch.stages.length}
-              route={ch.route}
-              unit={ch.unit}
-              budgetLabel={ch.budgetLabel}
-              restartLabel={ch.restartLabel}
-              nextTitle={ch.stages[index + 1]?.title}
-            />
-          </section>
+            <section className="bench" aria-label={ch.ringLabel}>
+              <StageRing
+                stages={ch.stages}
+                current={index}
+                route={ch.route}
+                unit={ch.unit}
+                label={ch.ringLabel}
+                loopNote={ch.loopNote}
+              />
+              <StageCard
+                stage={ch.stages[index]}
+                index={index}
+                total={ch.stages.length}
+                route={ch.route}
+                unit={ch.unit}
+                budgetLabel={ch.budgetLabel}
+                restartLabel={ch.restartLabel}
+                nextTitle={ch.stages[index + 1]?.title}
+              />
+            </section>
 
-          <Panels />
-        </main>
+            <Panels />
+          </main>
+        )}
 
         <footer className="foot">
           <p>{ui.foot}</p>

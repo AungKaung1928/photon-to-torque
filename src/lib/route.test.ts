@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseRoute, wrapIndex } from './route'
+import { isHome, parseRoute, wrapIndex } from './route'
 
 const chapters = [
   { route: 'tick', stages: [1, 2, 3, 4, 5, 6, 7, 8] },
@@ -33,5 +33,14 @@ describe('wrapIndex', () => {
     expect(wrapIndex(-1, 8)).toBe(7)
     expect(wrapIndex(3, 8)).toBe(3)
     expect(wrapIndex(-9, 8)).toBe(7)
+  })
+})
+
+describe('isHome', () => {
+  it('is true only for an empty hash', () => {
+    expect(isHome('')).toBe(true)
+    expect(isHome('#/')).toBe(true)
+    expect(isHome('#/tick/1')).toBe(false)
+    expect(isHome('#/nope')).toBe(false)
   })
 })

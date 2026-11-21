@@ -128,6 +128,18 @@ try {
     if (cj.h1 === c1.h1) cj.bad.push('chapter title is not translated')
     report(`#/${ch.route}/1 (ja)`, cj.bad)
   }
+  // Overview: one card per chapter, each with a number and a link to step 1.
+  for (const lang of ['en', 'ja']) {
+    const home = load('', { lang, shot: lang === 'en' ? 'overview.png' : undefined })
+    const bad = home.consoleErrors.map((e) => `console: ${e.slice(-160)}`)
+    for (const ch of CHAPTERS) {
+      const card = home.dom.match(new RegExp(`id="card-${ch.route}" href="#/${ch.route}/1">(.*?)</a>`, 's'))?.[1]
+      if (!card) bad.push(`no card for ${ch.route}`)
+      else if (!/class="ov-value">[^<]*\d/.test(card)) bad.push(`card ${ch.route} has no number`)
+    }
+    if (lang === 'ja' && !/<html lang="ja"/.test(home.dom)) bad.push('html lang is not ja')
+    report(`overview (${lang})`, bad)
+  }
   // An unknown route falls back to chapter 1, step 1 instead of a blank page.
   const lost = load('#/nope/99')
   report('#/nope/99 falls back', check(lost.dom, lost.consoleErrors, CHAPTERS[0], 1).bad)

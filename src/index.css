@@ -1545,3 +1545,61 @@ li.bad .r-tag {
     flex: none;
   }
 }
+
+/* Overview: one sheet row per chapter, its strongest measured number in the largest type. */
+.brand {
+  color: var(--ink);
+  text-decoration: none;
+}
+.overview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
+}
+.overview a {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  gap: 6px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+}
+.overview a:hover {
+  border-color: var(--accent);
+}
+.ov-title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+.ov-value {
+  align-self: end;
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.ov-label {
+  min-height: 2.9em; /* two lines, so the numbers of one row share a baseline */
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.ov-go {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+}

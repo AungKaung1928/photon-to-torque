@@ -11,6 +11,11 @@ export function parseRoute<C extends RouteChapter>(hash: string, chapters: reado
   return { ch, index: n >= 1 && n <= ch.stages.length ? n - 1 : 0 }
 }
 
+// An empty hash is the overview page; every other hash is a chapter step.
+export function isHome(hash: string): boolean {
+  return hash === '' || hash === '#' || hash === '#/'
+}
+
 // Stepping past either end wraps around the ring.
 export function wrapIndex(index: number, len: number): number {
   return ((index % len) + len) % len

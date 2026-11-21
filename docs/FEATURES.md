@@ -2,7 +2,7 @@
 
 What the site must do, how a visitor reaches each feature, and how `scripts/verify.sh` proves it still works.
 The script builds the site, serves the build and loads every row below in headless Chrome. It exits non-zero on a
-console error, a missing element or an empty drawing. Screenshots of step 1 of each chapter go to `verify-out/`
+console error, a missing element or an empty drawing. Screenshots of the overview and of step 1 of each chapter go to `verify-out/`
 (git-ignored).
 
 ```
@@ -11,7 +11,8 @@ console error, a missing element or an empty drawing. Screenshots of step 1 of e
 
 | Feature | How a visitor reaches it | How the script drives it | Visible state that proves it |
 |---|---|---|---|
-| Chapter page | Chapter list in the header, or `#/<route>/1` | Loads `#/<route>/1` for `tick`, `ppo`, `dds`, `sim2real`, `vla`, `sysid` | Chapter title (`h1`), step title, ring with a current step |
+| Overview | Opening the site, or the site name in the header | Loads the site with no route, in English and Japanese | One card per chapter (`card-<route>`) with a number and a link to step 1 |
+| Chapter page | Overview card, chapter list in the header, or `#/<route>/1` | Loads `#/<route>/1` for `tick`, `ppo`, `dds`, `sim2real`, `vla`, `sysid` | Chapter title (`h1`), step title, ring with a current step |
 | Step-through | Next / Back buttons, arrow keys, ring | Reads "1 / N" on step 1, then loads every `#/<route>/<k>` up to N | Position text shows `k / N` on step k |
 | Wrap-around | Next on the last step | Loads the last step | Next links to `#/<route>/1` |
 | Chapter panels | Below the step card | Looks for each panel heading id (table below) | Heading present, at least one SVG, no empty SVG |
