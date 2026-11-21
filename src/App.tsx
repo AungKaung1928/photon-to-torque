@@ -377,6 +377,11 @@ const UI = {
     language: 'Language',
     overview: 'Overview',
     evidence: 'Evidence in this chapter',
+    readout: 'Readout',
+    sourced: 'steps with a sourced number',
+    thisStep: 'this step',
+    measured: 'measured',
+    unmeasured: 'no number',
     tagline:
       'Six short chapters on what happens between a sensor reading and a motor command. Every number comes from a measured run and names its source.',
     start: 'Open chapter',
@@ -389,6 +394,11 @@ const UI = {
     language: '表示言語',
     overview: '全体図',
     evidence: 'この章の根拠',
+    readout: '計測値',
+    sourced: '出典付きの数値があるステップ',
+    thisStep: 'このステップ',
+    measured: '計測あり',
+    unmeasured: '数値なし',
     tagline:
       'センサーの読み取りからモーター指令までに起きることを、6 つの短い章で追います。数値はすべて実測で、出典を示します。',
     start: 'この章を開く',
@@ -680,6 +690,29 @@ export default function App() {
               <h1>{ch.title}</h1>
               <p>{ch.intro}</p>
             </section>
+
+            <dl className="readout" aria-label={ui.readout}>
+              <div>
+                <dt>{ch.headline.label}</dt>
+                <dd>{ch.headline.value}</dd>
+              </div>
+              <div>
+                <dt>{ui.sourced}</dt>
+                <dd>
+                  {ch.stages.filter((s) => s.budget).length} / {ch.stages.length}
+                </dd>
+              </div>
+              <div>
+                <dt>{ui.thisStep}</dt>
+                <dd id="readout-step">
+                  {ch.stages[index].budget ? (
+                    <span className="chip solid">{ui.measured}</span>
+                  ) : (
+                    <span className="chip">{ui.unmeasured}</span>
+                  )}
+                </dd>
+              </div>
+            </dl>
 
             <nav className="evidence" aria-label={ui.evidence}>
               <span className="eyebrow">{ui.evidence}</span>
