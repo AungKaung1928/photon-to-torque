@@ -75,3 +75,20 @@ describe('reduced motion', () => {
     for (const [file, text] of Object.entries(code)) expect(text, file).not.toMatch(/behavior:\s*'smooth'|requestAnimationFrame|\.animate\(/)
   })
 })
+
+// System diagram: node label (--k-<kind>) on its tint, and the lit node's label (--k-on-ink) on the solid hue.
+describe('diagram node colours', () => {
+  const kinds = ['sense', 'compute', 'bus', 'act', 'world', 'check']
+  for (const [theme, sel] of [
+    ['light', ':root'],
+    ['dark', ":root[data-theme='dark']"],
+  ]) {
+    const t = tokens(css, sel)
+    for (const k of kinds) {
+      it(`${theme} ${k}: label on tint and lit label on hue reach 4.5:1`, () => {
+        expect(contrast(t[`k-${k}`], t[`k-${k}-bg`])).toBeGreaterThanOrEqual(4.5)
+        expect(contrast(t['k-on-ink'], t[`k-${k}`])).toBeGreaterThanOrEqual(4.5)
+      })
+    }
+  }
+})

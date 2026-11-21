@@ -33,6 +33,21 @@
   --radius: 6px;
 
   color-scheme: light;
+  --k-sense: #0b6e65;
+  --k-sense-bg: #d5f2ee;
+  --k-compute: #2452c2;
+  --k-compute-bg: #dbe7ff;
+  --k-bus: #6a35c0;
+  --k-bus-bg: #ece0ff;
+  --k-act: #a64b08;
+  --k-act-bg: #ffe4cc;
+  --k-world: #2c7020;
+  --k-world-bg: #dcf3d6;
+  --k-check: #ab2858;
+  --k-check-bg: #ffdbe6;
+  --k-on-ink: #ffffff;
+  --sd-ground: #f3f6fb;
+  --sd-dot: #c9d3e2;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,6 +70,21 @@
     --good-ink: #6fd396;
     --bad: #ef5b4f;
     --bad-ink: #ff8a80;
+    --k-sense: #5fd6c8;
+    --k-sense-bg: #12332f;
+    --k-compute: #8fb0ff;
+    --k-compute-bg: #17284d;
+    --k-bus: #c3a2ff;
+    --k-bus-bg: #2a1d47;
+    --k-act: #ffab66;
+    --k-act-bg: #3d2410;
+    --k-world: #8fdc7e;
+    --k-world-bg: #18361a;
+    --k-check: #ff8fb5;
+    --k-check-bg: #42172a;
+    --k-on-ink: #0c1524;
+    --sd-ground: #0f1a2c;
+    --sd-dot: #24344f;
     color-scheme: dark;
   }
 }
@@ -78,6 +108,21 @@
   --good-ink: #6fd396;
   --bad: #ef5b4f;
   --bad-ink: #ff8a80;
+  --k-sense: #5fd6c8;
+  --k-sense-bg: #12332f;
+  --k-compute: #8fb0ff;
+  --k-compute-bg: #17284d;
+  --k-bus: #c3a2ff;
+  --k-bus-bg: #2a1d47;
+  --k-act: #ffab66;
+  --k-act-bg: #3d2410;
+  --k-world: #8fdc7e;
+  --k-world-bg: #18361a;
+  --k-check: #ff8fb5;
+  --k-check-bg: #42172a;
+  --k-on-ink: #0c1524;
+  --sd-ground: #0f1a2c;
+  --sd-dot: #24344f;
   color-scheme: dark;
 }
 
@@ -1717,60 +1762,7 @@ main {
   color: var(--accent);
 }
 
-/* System diagram: one hue per node kind, same in every chapter (legend under the diagram) */
-:root {
-  --k-sense: #0b6e65;
-  --k-sense-bg: #d5f2ee;
-  --k-compute: #2452c2;
-  --k-compute-bg: #dbe7ff;
-  --k-bus: #6a35c0;
-  --k-bus-bg: #ece0ff;
-  --k-act: #a64b08;
-  --k-act-bg: #ffe4cc;
-  --k-world: #2c7020;
-  --k-world-bg: #dcf3d6;
-  --k-check: #ab2858;
-  --k-check-bg: #ffdbe6;
-  --k-on-ink: #ffffff;
-  --sd-ground: #f3f6fb;
-  --sd-dot: #c9d3e2;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --k-sense: #5fd6c8;
-    --k-sense-bg: #12332f;
-    --k-compute: #8fb0ff;
-    --k-compute-bg: #17284d;
-    --k-bus: #c3a2ff;
-    --k-bus-bg: #2a1d47;
-    --k-act: #ffab66;
-    --k-act-bg: #3d2410;
-    --k-world: #8fdc7e;
-    --k-world-bg: #18361a;
-    --k-check: #ff8fb5;
-    --k-check-bg: #42172a;
-    --k-on-ink: #0c1524;
-    --sd-ground: #0f1a2c;
-    --sd-dot: #24344f;
-  }
-}
-:root[data-theme='dark'] {
-  --k-sense: #5fd6c8;
-  --k-sense-bg: #12332f;
-  --k-compute: #8fb0ff;
-  --k-compute-bg: #17284d;
-  --k-bus: #c3a2ff;
-  --k-bus-bg: #2a1d47;
-  --k-act: #ffab66;
-  --k-act-bg: #3d2410;
-  --k-world: #8fdc7e;
-  --k-world-bg: #18361a;
-  --k-check: #ff8fb5;
-  --k-check-bg: #42172a;
-  --k-on-ink: #0c1524;
-  --sd-ground: #0f1a2c;
-  --sd-dot: #24344f;
-}
+/* System diagram: one hue per node kind, same in every chapter (tokens in :root and the dark blocks) */
 .k-sense { --k: var(--k-sense); --k-bg: var(--k-sense-bg); }
 .k-compute { --k: var(--k-compute); --k-bg: var(--k-compute-bg); }
 .k-bus { --k: var(--k-bus); --k-bg: var(--k-bus-bg); }
