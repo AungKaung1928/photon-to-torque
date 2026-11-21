@@ -1494,3 +1494,32 @@ li.bad .r-tag {
 .replay-legend .ld-key-period::before {
   border-top: 2px dashed var(--series-2);
 }
+
+/* Phone: Back / Next stay at the bottom edge while the reader scrolls ring, card and panels. */
+@media (max-width: 700px) {
+  .stepper {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 5;
+    flex-wrap: nowrap;
+    background: var(--bg);
+    border-top: 1px solid var(--hairline-strong);
+    padding-block: 10px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .stepper .hint {
+    display: none;
+  }
+  .stepper .btn.primary {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    padding-block: 6px;
+  }
+  .page {
+    padding-bottom: 96px;
+  }
+}
