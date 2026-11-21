@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { DiagramTagContext } from '../diagramTag'
 import type { PointerEvent } from 'react'
 import { config } from '../content/ppo'
 import { SourceList } from './SourceList'
@@ -103,6 +104,13 @@ function Panel({ a, r, yMin, yMax, yTicks, title, onPick }: PanelProps) {
 export function ClipPlot() {
   const T = TEXT[useLang()]
   const [r, setR] = useState(1.3)
+  const pin = useContext(DiagramTagContext)
+  // Ratio and the gradient for a good (A = +1) and a bad (A = -1) action, pinned to the loss node of the diagram.
+  const pick = (v: number) => {
+    setR(v)
+    const g = (a: number) => String(gradient(v, a)).replace('-', '−')
+    pin({ route: 'ppo', node: 'objective', text: `r ${v.toFixed(2)} · grad ${g(1)} / ${g(-1)}` })
+  }
   return (
     <div className="clip">
       <div className="clip-control">
@@ -116,13 +124,13 @@ export function ClipPlot() {
           max={X_MAX}
           step={0.01}
           value={r}
-          onChange={(e) => setR(Number(e.target.value))}
+          onChange={(e) => pick(Number(e.target.value))}
         />
         <span className="muted">{T.band}</span>
       </div>
       <div className="clip-panels">
-        <Panel a={1} r={r} yMin={0} yMax={1.4} yTicks={[0, 0.4, 0.8, 1.2]} title={T.good} onPick={setR} />
-        <Panel a={-1} r={r} yMin={-2} yMax={0} yTicks={[-2, -1.2, -0.8, 0]} title={T.bad} onPick={setR} />
+        <Panel a={1} r={r} yMin={0} yMax={1.4} yTicks={[0, 0.4, 0.8, 1.2]} title={T.good} onPick={pick} />
+        <Panel a={-1} r={r} yMin={-2} yMax={0} yTicks={[-2, -1.2, -0.8, 0]} title={T.bad} onPick={pick} />
       </div>
       <p className="panel-note">{T.note}</p>
       <SourceList sources={[{ label: T.source, ref: 'arXiv:1707.06347' }]} />

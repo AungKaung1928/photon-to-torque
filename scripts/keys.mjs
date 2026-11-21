@@ -135,6 +135,13 @@ try {
   if (!after[3]?.endsWith(want3)) bad.push(`diagram tag on the sim node shows ${after[3]}, expected … ${want3}`)
   report('arrow keys inside a slider move it, its readout and the diagram tag', bad)
 
+  // The PPO ratio slider pins r and both gradients to the loss node: r 1.31 clips the good action (grad 0), not the bad one.
+  await open('#/ppo/6')
+  await js(`document.getElementById('clip-r').focus()`)
+  await press('ArrowRight')
+  const ppoTag = await js(`document.querySelector('#tag-ppo text')?.textContent`)
+  report('PPO ratio slider pins r and the gradients to the loss node', ppoTag === 'r 1.31 · grad 0 / −1' ? [] : [`tag shows ${ppoTag}, expected r 1.31 · grad 0 / −1`])
+
   // A pointer drag to the slider's right end sets the largest delay and its exported error.
   await open('#/sysid/3')
   await js(`${SLIDER}.scrollIntoView({ block: 'center' })`)

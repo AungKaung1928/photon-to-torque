@@ -11,7 +11,7 @@ interface Props {
   position: string // e.g. 'Stage 1 of 8'
   title: string // title of the open step
   what: string // one or two lines: what happens in the open step
-  tag?: DiagramTag // live value from a panel slider, drawn right of its node (keep that cell empty)
+  tag?: DiagramTag // live value from a panel slider, drawn beside its node
 }
 
 const W = 132 // node box
@@ -36,6 +36,21 @@ function edgePoint(from: { x: number; y: number }, to: { x: number; y: number },
   if (dx === 0 && dy === 0) return { x: cx, y: cy }
   const s = Math.min(dx === 0 ? Infinity : w / 2 / Math.abs(dx), dy === 0 ? Infinity : h / 2 / Math.abs(dy))
   return { x: cx + dx * s, y: cy + dy * s }
+}
+
+// A pill beside a node: right of it when it fits in the drawing, otherwise left (keep that cell empty).
+function Tag({ at, text, id, vw }: { at: { x: number; y: number }; text: string; id: string; vw: number }) {
+  const tw = text.length * 7.4 + 20 // 12 px mono
+  const right = at.x + W + 8
+  const x = right + tw <= vw - 4 ? right : at.x - 8 - tw
+  return (
+    <g className="sd-tag" id={id}>
+      <rect x={x} y={at.y + H / 2 - 11} width={tw} height={22} rx={11} />
+      <text x={x + tw / 2} y={at.y + H / 2} dominantBaseline="central" textAnchor="middle">
+        {text}
+      </text>
+    </g>
+  )
 }
 
 export function SystemDiagram({ route, stepIds, current, label, position, title, what, tag }: Props) {
@@ -110,14 +125,7 @@ export function SystemDiagram({ route, stepIds, current, label, position, title,
               </a>
             )
           })}
-          {tag && byId[tag.node] && (
-            <g className="sd-tag" id={`tag-${route}`}>
-              <rect x={box(byId[tag.node]).x + W + 8} y={box(byId[tag.node]).y + H / 2 - 11} width={W + 28} height={22} rx={11} />
-              <text x={box(byId[tag.node]).x + W * 1.5 + 22} y={box(byId[tag.node]).y + H / 2} dominantBaseline="central" textAnchor="middle">
-                {tag.text}
-              </text>
-            </g>
-          )}
+          {tag && byId[tag.node] && <Tag at={box(byId[tag.node])} text={tag.text} id={`tag-${route}`} vw={vw} />}
         </svg>
       </div>
       <figcaption className="sd-caption" aria-live="polite">

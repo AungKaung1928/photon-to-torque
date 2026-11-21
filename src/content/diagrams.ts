@@ -77,7 +77,7 @@ export const DIAGRAMS: Record<string, Diagram> = {
       n('value', 'compute', 1, 1, 'Value net', '価値関数'),
       n('buffer', 'bus', 2, 2, 'Rollout buffer', 'ロールアウトバッファ'),
       n('batches', 'bus', 3, 2, 'Minibatches', 'ミニバッチ'),
-      n('objective', 'compute', 3, 0, 'Clipped loss', 'クリップ付き損失'),
+      n('objective', 'compute', 2, 0, 'Clipped loss', 'クリップ付き損失'),
       n('monitor', 'check', 4, 1, 'KL / clip fraction', 'KL / クリップ率'),
     ],
     edges: [
