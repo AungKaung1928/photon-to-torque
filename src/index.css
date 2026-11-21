@@ -1642,3 +1642,11 @@ main {
     padding: 16px;
   }
 }
+
+/* The filled marker moves to the open step instead of jumping (off under reduced motion, see the global rule). */
+.ring-node circle,
+.ring-node text {
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease;
+}
