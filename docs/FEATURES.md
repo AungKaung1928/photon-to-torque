@@ -13,6 +13,7 @@ console error, a missing element or an empty drawing. Screenshots of the overvie
 |---|---|---|---|
 | Overview | Opening the site, or the site name in the header | Loads the site with no route, in English and Japanese | One card per chapter (`card-<route>`) with a number and a link to step 1 |
 | Chapter page | Overview card, chapter list in the header, or `#/<route>/1` | Loads `#/<route>/1` for `tick`, `ppo`, `dds`, `sim2real`, `vla`, `sysid` | Chapter title (`h1`), step title, ring with a current step |
+| System diagram | Top of every chapter: the chapter's system as coloured nodes (one hue per kind, legend under it); the open step's node is filled, its links drawn dark, the link into it flows; caption = open step; Back / Play / Next under it | Every step: exactly one lit node (`aria-current="step"` on `sd-node … on`), at least one lit link, caption title = step title, `<route>-play` present, diagram Back/Next link to k-1 / k+1 with wrap; unit test: every step maps to a node, edges join real nodes, no two nodes share a grid cell | All present; break test: Next to k+2 + caption title cut → 20/69, exit 1 |
 | Step-through | Next / Back buttons, arrow keys, ring | Reads "1 / N" on step 1, then loads every `#/<route>/<k>` up to N | Position text shows `k / N` on step k |
 | Wrap-around | Next on the last step | Loads the last step | Next links to `#/<route>/1` |
 | Chapter panels | Below the step card | Looks for each panel heading id (table below) | Heading present, at least one SVG, no empty SVG |

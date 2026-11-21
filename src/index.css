@@ -1716,3 +1716,188 @@ main {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* System diagram: one hue per node kind, same in every chapter (legend under the diagram) */
+:root {
+  --k-sense: #0b6e65;
+  --k-sense-bg: #d5f2ee;
+  --k-compute: #2452c2;
+  --k-compute-bg: #dbe7ff;
+  --k-bus: #6a35c0;
+  --k-bus-bg: #ece0ff;
+  --k-act: #a64b08;
+  --k-act-bg: #ffe4cc;
+  --k-world: #2c7020;
+  --k-world-bg: #dcf3d6;
+  --k-check: #ab2858;
+  --k-check-bg: #ffdbe6;
+  --k-on-ink: #ffffff;
+  --sd-ground: #f3f6fb;
+  --sd-dot: #c9d3e2;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --k-sense: #5fd6c8;
+    --k-sense-bg: #12332f;
+    --k-compute: #8fb0ff;
+    --k-compute-bg: #17284d;
+    --k-bus: #c3a2ff;
+    --k-bus-bg: #2a1d47;
+    --k-act: #ffab66;
+    --k-act-bg: #3d2410;
+    --k-world: #8fdc7e;
+    --k-world-bg: #18361a;
+    --k-check: #ff8fb5;
+    --k-check-bg: #42172a;
+    --k-on-ink: #0c1524;
+    --sd-ground: #0f1a2c;
+    --sd-dot: #24344f;
+  }
+}
+:root[data-theme='dark'] {
+  --k-sense: #5fd6c8;
+  --k-sense-bg: #12332f;
+  --k-compute: #8fb0ff;
+  --k-compute-bg: #17284d;
+  --k-bus: #c3a2ff;
+  --k-bus-bg: #2a1d47;
+  --k-act: #ffab66;
+  --k-act-bg: #3d2410;
+  --k-world: #8fdc7e;
+  --k-world-bg: #18361a;
+  --k-check: #ff8fb5;
+  --k-check-bg: #42172a;
+  --k-on-ink: #0c1524;
+  --sd-ground: #0f1a2c;
+  --sd-dot: #24344f;
+}
+.k-sense { --k: var(--k-sense); --k-bg: var(--k-sense-bg); }
+.k-compute { --k: var(--k-compute); --k-bg: var(--k-compute-bg); }
+.k-bus { --k: var(--k-bus); --k-bg: var(--k-bus-bg); }
+.k-act { --k: var(--k-act); --k-bg: var(--k-act-bg); }
+.k-world { --k: var(--k-world); --k-bg: var(--k-world-bg); }
+.k-check { --k: var(--k-check); --k-bg: var(--k-check-bg); }
+
+.sysdiag {
+  margin: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--sd-ground);
+  overflow: hidden;
+}
+.sysdiag-scroll {
+  overflow-x: auto;
+  padding: 16px;
+  background-image: radial-gradient(var(--sd-dot) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+.sysdiag svg {
+  display: block;
+  margin-inline: auto;
+  max-width: 100%;
+  height: auto;
+  min-width: 640px;
+}
+.sd-edge {
+  stroke: var(--hairline-strong);
+  stroke-width: 2;
+  fill: none;
+}
+.sd-arrowhead {
+  fill: var(--hairline-strong);
+}
+.sd-edge.on {
+  stroke: var(--ink-2);
+  stroke-width: 2.5;
+}
+.sd-edge[data-into] {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-dasharray: 8 6;
+  animation: sd-flow 0.9s linear infinite;
+}
+@keyframes sd-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+.sd-node rect {
+  fill: var(--k-bg);
+  stroke: var(--k);
+  stroke-width: 2;
+  transition: fill 0.25s, stroke-width 0.25s;
+}
+.sd-node text {
+  fill: var(--k);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+}
+.sd-node:hover rect {
+  stroke-width: 3;
+}
+.sd-node.on rect {
+  fill: var(--k);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.sd-node.on text {
+  fill: var(--k-on-ink);
+}
+.sd-node:focus {
+  outline: none;
+}
+.sd-node:focus-visible rect {
+  stroke: var(--focus);
+  stroke-width: 4;
+  stroke-dasharray: 5 3;
+}
+.sd-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--hairline);
+  background: var(--bg);
+}
+.sd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+.sd-legend li::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 3px;
+  background: var(--k);
+  vertical-align: -1px;
+}
+.intro-text {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--ink-2);
+}
+.sd-caption {
+  display: grid;
+  max-width: none;
+  gap: 4px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--hairline);
+  background: var(--bg);
+  color: var(--ink-2);
+}
+.sd-caption strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--step-1, 1.15rem);
+}

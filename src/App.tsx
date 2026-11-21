@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Stage } from './content/tick'
+import { SystemDiagram } from './components/SystemDiagram'
 import { StageRing } from './components/StageRing'
 import { StageCard } from './components/StageCard'
 import { TickTimeline } from './components/TickTimeline'
@@ -691,8 +692,21 @@ export default function App() {
             <section className="intro">
               <p className="eyebrow">{ui.chapter(ch.n)}</p>
               <h1>{ch.title}</h1>
-              <p>{ch.intro}</p>
             </section>
+
+            {/* keyed by chapter: Play stops when the chapter changes */}
+            <SystemDiagram
+              key={ch.route}
+              route={ch.route}
+              stepIds={ch.stages.map((s) => s.id)}
+              current={index}
+              label={ch.ringLabel}
+              position={`${ch.unit} ${index + 1} / ${ch.stages.length}`}
+              title={ch.stages[index].title}
+              what={ch.stages[index].what}
+            />
+
+            <p className="intro-text">{ch.intro}</p>
 
             <dl className="readout">
               <div>

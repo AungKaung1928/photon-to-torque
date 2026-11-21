@@ -74,7 +74,21 @@ function check(dom, consoleErrors, ch, step) {
   const pos = dom.match(/class="eyebrow">[^<]*?(\d+) \/ (\d+)</)
   if (!pos) bad.push('no step position')
   else if (Number(pos[1]) !== step) bad.push(`step position shows ${pos[1]}, expected ${step}`)
-  if (!/aria-current="step"/.test(dom)) bad.push('ring has no current step')
+  if (!/class="ring-node [^"]*"[^>]*aria-current="step"/.test(dom)) bad.push('ring has no current step')
+  // System diagram: exactly one node lit, a lit link, its caption names the open step, Back/Play/Next wired.
+  const lit = dom.match(/class="sd-node k-\w+ on"[^>]*aria-current="step"/g) ?? []
+  if (lit.length !== 1) bad.push(`diagram lights ${lit.length} nodes, expected 1`)
+  if (!/class="sd-edge on"/.test(dom)) bad.push('diagram lights no link')
+  const caption = text(dom, /class="sd-caption"[^>]*>.*?<strong>([^<]+)<\/strong>/)
+  if (caption !== text(dom, /id="stage-title">([^<]+)</)) bad.push(`diagram caption "${caption}" is not the open step`)
+  if (!dom.includes(`id="${ch.route}-play"`)) bad.push('no Play button')
+  if (pos) {
+    const n = Number(pos[2])
+    const want = (k) => `#/${ch.route}/${((k - 1 + n) % n) + 1}`
+    const href = (id) => text(dom, new RegExp(`id="${ch.route}-diag-${id}"[^>]*href="([^"]+)"`))
+    if (href('back') !== want(step - 1)) bad.push(`diagram Back goes to ${href('back')}, expected ${want(step - 1)}`)
+    if (href('next') !== want(step + 1)) bad.push(`diagram Next goes to ${href('next')}, expected ${want(step + 1)}`)
+  }
   if (pos && (dom.match(/class="focus-ring"/g) ?? []).length !== Number(pos[2])) bad.push('a ring node has no focus ring')
   if (!/<dd id="readout-step"><span class="chip( solid)?">[^<]+<\/span>/.test(dom)) bad.push('readout row has no chip for this step')
   const sourced = dom.match(/<dd>(\d+) \/ (\d+)<\/dd>/)
