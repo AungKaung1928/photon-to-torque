@@ -113,22 +113,33 @@ async function startServer() {
 mkdirSync(OUT, { recursive: true })
 
 // Phone width: headless Chrome cannot open a 390 px window on every platform, so a same-origin page holds the
-// site in a 390 px frame and prints the frame's scroll width next to its own width.
+// site in a 390 px frame, walks it through steps 1..n of one chapter (?n=), and prints each step's scroll width
+// next to the frame's own width. It ends back on step 1 so the screenshot shows the chapter start.
 const FRAME = join(ROOT, 'dist', '_frame.html')
 writeFileSync(
   FRAME,
   `<!doctype html><body style="margin:0"><iframe id="f" style="width:390px;height:844px;border:0"></iframe><script>
 const f = document.getElementById('f')
-f.onload = () => setTimeout(() => {
-  const d = f.contentDocument.documentElement
-  document.body.append('PHONE ' + d.scrollWidth + ' ' + d.clientWidth)
-}, 1500)
+const n = Number(new URLSearchParams(location.search).get('n') || 1)
+const route = location.hash.split('/')[1]
+const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+f.onload = async () => {
+  await wait(1000)
+  for (let i = 1; i <= n; i++) {
+    f.contentWindow.location.hash = '#/' + route + '/' + i
+    await wait(250)
+    const d = f.contentDocument.documentElement
+    document.body.append('PHONE ' + i + ' ' + d.scrollWidth + ' ' + d.clientWidth + ' ')
+  }
+  f.contentWindow.location.hash = '#/' + route + '/1'
+}
 f.src = '/' + location.hash
 </script>`,
 )
 const server = await startServer()
 let failed = 0
 let pages = 0
+const totals = {} // chapter route -> step count, read from step 1
 const report = (name, bad) => {
   pages++
   if (bad.length) failed++
@@ -140,6 +151,7 @@ try {
     const first = load(`#/${ch.route}/1`, { shot: `${ch.route}-1.png` })
     const c1 = check(first.dom, first.consoleErrors, ch, 1)
     report(`#/${ch.route}/1`, c1.bad)
+    totals[ch.route] = c1.total
     for (let step = 2; step <= c1.total; step++) {
       const p = load(`#/${ch.route}/${step}`)
       report(`#/${ch.route}/${step}`, check(p.dom, p.consoleErrors, ch, step).bad)
@@ -168,13 +180,15 @@ try {
     if (lang === 'ja' && !/<html lang="ja"/.test(home.dom)) bad.push('html lang is not ja')
     report(`overview (${lang})`, bad)
   }
-  // No sideways page scroll at 390 px, in both languages (Japanese lines break differently).
+  // No sideways page scroll at 390 px on any step, in both languages (Japanese lines break differently).
   for (const ch of CHAPTERS) {
     for (const lang of ['en', 'ja']) {
-      const p = load(`_frame.html#/${ch.route}/1`, { lang, shot: lang === 'en' ? `${ch.route}-1-phone.png` : undefined })
-      const m = p.dom.match(/PHONE (\d+) (\d+)/)
-      const bad = !m ? ['no width reading'] : Number(m[1]) > Number(m[2]) ? [`page is ${m[1]} px wide in a ${m[2]} px frame`] : []
-      report(`#/${ch.route}/1 at 390 px (${lang})`, bad)
+      const n = totals[ch.route]
+      const p = load(`_frame.html?n=${n}#/${ch.route}/1`, { lang, shot: lang === 'en' ? `${ch.route}-1-phone.png` : undefined })
+      const rows = [...p.dom.matchAll(/PHONE (\d+) (\d+) (\d+)/g)]
+      const bad = rows.length !== n ? [`${rows.length} of ${n} steps measured`] : []
+      for (const [, step, w, cw] of rows) if (Number(w) > Number(cw)) bad.push(`step ${step} is ${w} px wide in a ${cw} px frame`)
+      report(`#/${ch.route} all ${n} steps at 390 px (${lang})`, bad)
     }
   }
   // An unknown route falls back to chapter 1, step 1 instead of a blank page.

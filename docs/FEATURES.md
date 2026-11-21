@@ -21,7 +21,7 @@ console error, a missing element or an empty drawing. Screenshots of the overvie
 | Readout row | Under the chapter title: headline number, sourced steps k / N, this step measured or not | Every step: a chip for this step; N equals the ring's step count | Both present; break test: N + 1 → exit 1 |
 | Accessible names | Focusable chart values (timeline steps, gap bars) | Every page: no `div`, `span` or `dl` carries `aria-label` without a `role` | None found; break test: timeline step without `role` → exit 1 |
 | Japanese | Language switch, or a Japanese browser | Loads step 1 of every chapter with the browser language set to `ja` | `<html lang="ja">`, chapter title differs from English |
-| Phone width | A 390 px wide phone | Loads step 1 of every chapter inside a 390 px frame, in English and Japanese, and reads the page's scroll width | Page is no wider than the frame (no sideways scroll); screenshot `<route>-1-phone.png` |
+| Phone width | A 390 px wide phone | Walks every step of every chapter inside a 390 px frame (one load per chapter and language), English and Japanese, and reads the scroll width per step | Page is no wider than the frame (no sideways scroll) on every step; break test: a 700 px element on step 5 only → exit 1; screenshot `<route>-1-phone.png` |
 | Unknown link | A mistyped or old URL | Loads `#/nope/99` | Chapter 1, step 1 is shown, never a blank page |
 
 | Chapter route | Panel heading ids |
