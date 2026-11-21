@@ -107,6 +107,18 @@ try {
   const want = ['#/tick/2', '#/tick/1', '#/tick/8']
   report('arrow keys: right, left, left from step 1', seen.join() === want.join() ? [] : [`went ${seen.join(' → ')}, expected ${want.join(' → ')}`])
 
+  // Play walks one step per 2.4 s, lights the next step's node in the diagram, and stops on the last step.
+  await open('#/tick/7')
+  await js(`document.getElementById('tick-play').click()`)
+  await sleep(2800)
+  const played = await js(`location.hash + ' ' + document.querySelector('.sd-node[aria-current="step"]')?.id`)
+  await sleep(2800)
+  const stopped = await js(`location.hash + ' ' + document.getElementById('tick-play').getAttribute('aria-pressed')`)
+  report('Play: step 7 → 8, lights the physics node, stops on the last step', [
+    ...(played === '#/tick/8 node-tick-physics' ? [] : [`after one beat: ${played}, expected #/tick/8 node-tick-physics`]),
+    ...(stopped === '#/tick/8 false' ? [] : [`after two beats: ${stopped}, expected #/tick/8 false`]),
+  ])
+
   // Arrows inside a slider move the slider, not the step, and the readout follows to the sourced number:
   // three steps of command delay must show the exported mean error for delay 3 (src/data/replay.ts).
   const errByDelay = JSON.parse(readFileSync(join(ROOT, 'src/data/replay.ts'), 'utf8').match(/"meanErrByDelay":(\[[^\]]*\])/)[1])
