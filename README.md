@@ -47,10 +47,10 @@ npm run lint
 npm test        # unit tests: QoS checker, PPO clip math, routing, EN/JA parity
 npm run build   # type check + static build into dist/
 ./scripts/verify.sh   # builds, then loads every page in headless Chrome (needs Chrome)
+node scripts/keys.mjs # presses real keys: arrows, Tab focus (Linux Chrome)
 ```
 
-node scripts/keys.mjs  # presses real keys: arrows, Tab focus (Node 22+, Linux Chrome; runs in CI)
-CI (`.github/workflows/ci.yml`) runs lint, tests and the build on every push to `main`.
+CI (`.github/workflows/ci.yml`) runs lint, tests, the build, the verify script and the keyboard check on every push to `main`.
 
 Stack: Vite, React, TypeScript. Static site, hash routing, inline SVG.
 
