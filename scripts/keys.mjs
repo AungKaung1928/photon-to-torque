@@ -129,7 +129,7 @@ try {
     return JSON.stringify(look)
   })()`
   const NAME = "el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/ +/).join('.') : '')"
-  for (const hash of ['', '#/tick/3', '#/sysid/3', '#/dds/1']) {
+  for (const hash of ['', '#/tick/3', '#/ppo/1', '#/dds/1', '#/sim2real/1', '#/vla/1', '#/sysid/3']) {
     await open(hash || '#/')
     const invisible = []
     let stops = 0
