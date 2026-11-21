@@ -15,7 +15,7 @@ import { LatencyLadder } from './components/LatencyLadder'
 import { SpreadPlot } from './components/SpreadPlot'
 import { ReplayPlot } from './components/ReplayPlot'
 import { CONTENT, useContent } from './content'
-import { panelForStep } from './content/evidence'
+import { CHAPTER_PANELS, panelForStep } from './content/evidence'
 import { checkQos } from './content/dds'
 import type { QosSide } from './content/dds'
 import type { Content } from './content'
@@ -436,7 +436,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: `${latency.find((r) => r.id === 'duck-py')!.p50Ms.toFixed(3)} ms`, label: ja ? 'ポリシーの順伝播 (p50)。制御ティックは 20 ms' : 'policy forward pass (p50) inside a 20 ms tick' },
       panels: TickPanels,
-      evidence: ['budget-h', 'latency-h'],
+      evidence: [...CHAPTER_PANELS.tick],
     },
     {
       n: 2,
@@ -463,7 +463,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: (c.ppo.config.numEnvs * c.ppo.config.numSteps).toLocaleString('en-US'), label: ja ? 'PPO の更新 1 回に使う遷移数' : 'transitions in one PPO update' },
       panels: PpoPanels,
-      evidence: ['clip-h', 'diag-h'],
+      evidence: [...CHAPTER_PANELS.ppo],
     },
     {
       n: 3,
@@ -490,7 +490,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: String(checkQos(ANY_QOS, ANY_QOS).length), label: ja ? 'メッセージが届く前に一致が必要な QoS ポリシーの数' : 'QoS policies that must match before a message arrives' },
       panels: DdsPanels,
-      evidence: ['qos-h', 'profiles-h'],
+      evidence: [...CHAPTER_PANELS.dds],
     },
     {
       n: 4,
@@ -517,7 +517,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: `${c.tick.latencyGap.rows[0].nominalTrained.success} → ${c.tick.latencyGap.rows[1].nominalTrained.success}`, label: ja ? '行動レイテンシ 3 ステップでの成功率 (シミュレーション)' : 'success rate with 3 steps of action latency (simulation)' },
       panels: Sim2RealPanels,
-      evidence: ['holdout-h', 'trap-h'],
+      evidence: [...CHAPTER_PANELS.sim2real],
     },
     {
       n: 5,
@@ -545,7 +545,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: `${Math.min(...latency.map((r) => r.p50Ms))} – ${Math.max(...latency.map((r) => r.p50Ms)).toLocaleString('en-US')} ms`, label: ja ? `1 台のノート PC の CPU で計測した ${latency.length} モデルの p50` : `p50 of ${latency.length} models on one laptop CPU` },
       panels: VlaPanels,
-      evidence: ['scaling-h', 'timing-h', 'ladder-h'],
+      evidence: [...CHAPTER_PANELS.vla],
     },
     {
       n: 6,
@@ -570,7 +570,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: String(spread.length), label: ja ? '実機 SO-100 の記録から得たエピソードごとのサーボ同定' : 'per-episode servo fits from a real SO-100 recording' },
       panels: SysidPanels,
-      evidence: ['replay-h', 'fit-h', 'spread-h'],
+      evidence: [...CHAPTER_PANELS.sysid],
     },
   ]
 }
