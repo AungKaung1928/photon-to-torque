@@ -73,6 +73,7 @@ function check(dom, consoleErrors, ch, step) {
   if (!pos) bad.push('no step position')
   else if (Number(pos[1]) !== step) bad.push(`step position shows ${pos[1]}, expected ${step}`)
   if (!/aria-current="step"/.test(dom)) bad.push('ring has no current step')
+  if (pos && (dom.match(/class="focus-ring"/g) ?? []).length !== Number(pos[2])) bad.push('a ring node has no focus ring')
   if (!/<dd id="readout-step"><span class="chip( solid)?">[^<]+<\/span>/.test(dom)) bad.push('readout row has no chip for this step')
   const sourced = dom.match(/<dd>(\d+) \/ (\d+)<\/dd>/)
   if (!sourced) bad.push('readout row has no sourced-step count')

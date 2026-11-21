@@ -325,9 +325,17 @@ main {
   outline: none;
 }
 
-.ring-node:focus-visible circle {
+/* Focus is a separate ring outside the node, so it shows on the accent-filled current node too. */
+.ring-node circle.focus-ring {
+  fill: none;
+  stroke: none;
+  stroke-dasharray: none;
+  transition: none;
+}
+
+.ring-node:focus-visible circle.focus-ring {
   stroke: var(--focus);
-  stroke-width: 3;
+  stroke-width: 2.5;
 }
 
 .ring-center {

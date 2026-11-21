@@ -60,6 +60,7 @@ export function StageRing({ stages, current, route, unit, label, loopNote }: Pro
                 aria-current={i === current ? 'step' : undefined}
               >
                 <circle cx={p.x} cy={p.y} r={NODE_R} />
+                <circle className="focus-ring" cx={p.x} cy={p.y} r={NODE_R + 5} />
                 <text x={p.x} y={p.y} dy="0.35em" textAnchor="middle">
                   {i + 1}
                 </text>

@@ -44,6 +44,9 @@ describe.each([':root', ":root[data-theme='dark']"])('theme %s', (selector) => {
   it.each(['ink', 'ink-2', 'ink-3', 'accent'])('%s reaches 4.5:1 on bg, ground and surface', (fg) => {
     for (const bg of ['bg', 'ground', 'surface']) expect(contrast(t[fg], t[bg]), `${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5)
   })
+  it('the focus ring reaches 3:1 on bg, ground and surface (WCAG 1.4.11)', () => {
+    for (const bg of ['bg', 'ground', 'surface']) expect(contrast(t.focus, t[bg]), `focus on ${bg}`).toBeGreaterThanOrEqual(3)
+  })
   it('on-accent text reaches 4.5:1 on the accent', () => {
     expect(contrast(t['on-accent'], t.accent)).toBeGreaterThanOrEqual(4.5)
   })
