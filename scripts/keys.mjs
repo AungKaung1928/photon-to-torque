@@ -121,6 +121,22 @@ try {
   if (after[2] !== want3) bad.push(`readout shows ${after[2]}, expected ${want3}`)
   report('arrow keys inside a slider move it and its readout', bad)
 
+  // A pointer drag to the slider's right end sets the largest delay and its exported error.
+  await open('#/sysid/3')
+  await js(`${SLIDER}.scrollIntoView({ block: 'center' })`)
+  const [left, right, y] = await js(`(() => { const r = ${SLIDER}.getBoundingClientRect(); return [r.left, r.right, r.top + r.height / 2] })()`)
+  const mouse = (type, x) => send('Input.dispatchMouseEvent', { type, x, y, button: 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1 })
+  await mouse('mousePressed', left + 4)
+  for (let x = left + 4; x <= right + 20; x += 20) await mouse('mouseMoved', x)
+  await mouse('mouseReleased', right + 20)
+  await sleep(150)
+  const dragged = await js(`[${SLIDER}.value, ${SLIDER}.max, document.querySelector('[aria-labelledby=replay-h] .clip-read b:last-of-type').textContent]`)
+  const top = Number(dragged[1])
+  const dragBad = []
+  if (Number(dragged[0]) !== top) dragBad.push(`slider at ${dragged[0]} after a drag to the end, expected ${top}`)
+  if (dragged[2] !== `${errByDelay[top].toFixed(2)}°`) dragBad.push(`readout shows ${dragged[2]}, expected ${errByDelay[top].toFixed(2)}°`)
+  report('dragging the slider to its end', dragBad)
+
   // Every Tab stop must change how something looks: its outline, a ring, a border, or a tooltip.
   const LOOK = `(() => {
     const el = document.activeElement
