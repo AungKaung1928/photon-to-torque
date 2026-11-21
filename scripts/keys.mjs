@@ -93,6 +93,7 @@ try {
   }
   await send('Page.enable')
   await send('Runtime.enable')
+  await send('Accessibility.enable')
 
   // Arrow keys step through a chapter and wrap at both ends.
   await open('#/tick/1')
@@ -152,6 +153,17 @@ try {
   const NAME = "el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/ +/).join('.') : '')"
   for (const hash of ['', '#/tick/3', '#/ppo/1', '#/dds/1', '#/sim2real/1', '#/vla/1', '#/sysid/3']) {
     await open(hash || '#/')
+    // What a screen reader gets: every control in Chrome's accessibility tree needs a non-empty name.
+    const { nodes } = await send('Accessibility.getFullAXTree')
+    const CONTROLS = new Set(['link', 'button', 'slider', 'radio', 'checkbox', 'textbox', 'combobox'])
+    const nameless = nodes
+      .filter((n) => !n.ignored && CONTROLS.has(n.role?.value) && !String(n.name?.value ?? '').trim())
+      .map((n) => n.role.value)
+    const controls = nodes.filter((n) => !n.ignored && CONTROLS.has(n.role?.value)).length
+    report(`accessible names on ${hash || 'the overview'}: ${controls} controls`, [
+      ...(controls < 3 ? [`only ${controls} controls in the accessibility tree`] : []),
+      ...nameless.map((r) => `a ${r} has no accessible name`),
+    ])
     const invisible = []
     let stops = 0
     for (let i = 0; i < 80; i++) {
