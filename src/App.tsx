@@ -377,7 +377,6 @@ const UI = {
     language: 'Language',
     overview: 'Overview',
     evidence: 'Evidence in this chapter',
-    readout: 'Readout',
     sourced: 'steps with a sourced number',
     thisStep: 'this step',
     measured: 'measured',
@@ -394,7 +393,6 @@ const UI = {
     language: '表示言語',
     overview: '全体図',
     evidence: 'この章の根拠',
-    readout: '計測値',
     sourced: '出典付きの数値があるステップ',
     thisStep: 'このステップ',
     measured: '計測あり',
@@ -691,7 +689,7 @@ export default function App() {
               <p>{ch.intro}</p>
             </section>
 
-            <dl className="readout" aria-label={ui.readout}>
+            <dl className="readout">
               <div>
                 <dt>{ch.headline.label}</dt>
                 <dd>{ch.headline.value}</dd>

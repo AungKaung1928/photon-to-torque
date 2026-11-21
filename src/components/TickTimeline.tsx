@@ -56,6 +56,7 @@ export function TickTimeline() {
               tabIndex={0}
               className={`tl-step tip${i < 2 ? ' tip-start' : ''}${i >= steps - 2 ? ' tip-end' : ''}`}
               data-tip={T.tip(i + 1, i * physicsStepMs, (i + 1) * physicsStepMs)}
+              role="img"
               aria-label={T.aria(i + 1, steps, i * physicsStepMs, (i + 1) * physicsStepMs)}
             />
           ))}

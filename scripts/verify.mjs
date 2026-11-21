@@ -84,6 +84,9 @@ function check(dom, consoleErrors, ch, step) {
     if (!new RegExp(`id="evidence-${ch.mark[1]}"[^>]*aria-current="true"`).test(dom)) bad.push(`step does not mark ${ch.mark[1]}`)
     if (!new RegExp(`<h2 id="${ch.mark[1]}">[^<]*<span class="chip here"`).test(dom)) bad.push(`panel ${ch.mark[1]} is not marked`)
   }
+  // ARIA 1.2 prohibits aria-label on a generic div/span: screen readers may skip the name.
+  const unnamed = dom.match(/<(?:div|span|dl)\b(?![^>]*\brole=)[^>]*\baria-label=/)
+  if (unnamed) bad.push(`aria-label on an element with no role: ${unnamed[0].slice(0, 80)}`)
   if (/<svg[^>]*>\s*<\/svg>/.test(dom)) bad.push('empty svg')
   if (!/<svg/.test(dom)) bad.push('no svg drawn')
   return { bad, total: pos ? Number(pos[2]) : 0, h1: text(dom, /<h1>([^<]+)<\/h1>/) }

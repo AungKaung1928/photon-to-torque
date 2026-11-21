@@ -61,6 +61,7 @@ export function BarGroups({ id, series, rows, unit, rowHeader, digits, caption }
                   className="gap-row tip"
                   tabIndex={0}
                   data-tip={`${s.name}: ${fmtBar(x, digits)}`}
+                  role="img"
                   aria-label={`${row.label}, ${s.name}: ${unit} ${fmtBar(x, digits)}`}
                 >
                   <span className="gap-track">
