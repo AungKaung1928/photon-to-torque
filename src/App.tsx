@@ -605,6 +605,7 @@ export default function App() {
               unit={ch.unit}
               budgetLabel={ch.budgetLabel}
               restartLabel={ch.restartLabel}
+              nextTitle={ch.stages[index + 1]?.title}
             />
           </section>
 
