@@ -2,7 +2,7 @@
 
 A study app that follows one robot control tick from the camera to the motor, stage by stage. For each stage it shows what happens, the time budget, the main failure mode, and the source of every number.
 
-Status: 6 chapters are written. Content lives in `src/content/` (`tick.ts`, `ppo.ts`, `dds.ts`, `sim2real.ts`, `vla.ts`, `sysid.ts`); components only render it. Links: `#/tick/1`, `#/ppo/1`, `#/dds/1`, `#/sim2real/1`, `#/vla/1`, `#/sysid/1`, each with numbered steps. Arrow keys step through.
+Status: 6 chapters are written. Content lives in `src/content/` (`tick.ts`, `ppo.ts`, `dds.ts`, `sim2real.ts`, `vla.ts`, `sysid.ts`); components only render it. The site opens on an overview with one card per chapter. Links: `#/tick/1`, `#/ppo/1`, `#/dds/1`, `#/sim2real/1`, `#/vla/1`, `#/sysid/1`, each with numbered steps. Arrow keys step through.
 
 ## Chapters
 
@@ -36,6 +36,7 @@ Only when changing the code:
 npm run lint
 npm test        # unit tests: QoS checker, PPO clip math, routing, EN/JA parity
 npm run build   # type check + static build into dist/
+./scripts/verify.sh   # builds, then loads every page in headless Chrome (needs Chrome)
 ```
 
 CI (`.github/workflows/ci.yml`) runs lint, tests and the build on every push to `main`.
@@ -44,5 +45,6 @@ Stack: Vite, React, TypeScript. Static site, hash routing, inline SVG.
 
 ## Docs
 
+- `docs/FEATURES.md`: what the site must do and how `scripts/verify.sh` checks each feature.
 - `docs/DESIGN.md`: structure and content rules.
 - `docs/CH1_OUTLINE.md`: chapter 1 stages with budgets and sources.
