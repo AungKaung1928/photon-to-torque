@@ -19,11 +19,25 @@ Status: 6 chapters are written. Content lives in `src/content/` (`tick.ts`, `ppo
 - A stage with no measurement says "not measured". No estimates.
 - English and Japanese: each content file has a Japanese twin (`tick.ja.ts` …) with the same exports. The build fails if a twin drops an export or changes a shape, and `src/content/parity.test.ts` fails if a number, id or reference differs. The EN / 日本語 switch sits in the header; the choice is saved in the browser.
 
-## Run
+## Run locally
+
+Needs Node.js 20.19+ or 22.12+ (required by Vite) and npm.
 
 ```bash
-npm install
-npm run dev     # local dev server
+git clone https://github.com/AungKaung1928/photon-to-torque.git
+cd photon-to-torque
+npm ci          # once after cloning: installs the exact versions in package-lock.json
+npm run dev     # starts the app
+```
+
+Open the address `npm run dev` prints, usually http://localhost:5173, in a browser. The page reloads when a file changes. Ctrl+C in the terminal stops the server.
+
+Run every `npm` command from inside the `photon-to-torque` folder. From any other folder npm stops with `Could not read package.json`.
+
+That is all you need to read the app. The commands below are only for changing the code:
+
+```bash
+npm run lint    # oxlint
 npm test        # unit tests: QoS checker, PPO clip math, routing, EN/JA parity
 npm run build   # type check + static build into dist/
 ```
