@@ -18,6 +18,7 @@ console error, a missing element or an empty drawing. Screenshots of the overvie
 | Chapter panels | Below the step card | Looks for each panel heading id (table below) | Heading present, at least one SVG, no empty SVG |
 | Jump to evidence | Buttons under the chapter intro | Looks for one button per panel (`evidence-<panel id>`) on every step | Button present for each panel heading |
 | Japanese | Language switch, or a Japanese browser | Loads step 1 of every chapter with the browser language set to `ja` | `<html lang="ja">`, chapter title differs from English |
+| Phone width | A 390 px wide phone | Loads step 1 of every chapter inside a 390 px frame, in English and Japanese, and reads the page's scroll width | Page is no wider than the frame (no sideways scroll); screenshot `<route>-1-phone.png` |
 | Unknown link | A mistyped or old URL | Loads `#/nope/99` | Chapter 1, step 1 is shown, never a blank page |
 
 | Chapter route | Panel heading ids |
@@ -33,6 +34,5 @@ console error, a missing element or an empty drawing. Screenshots of the overvie
 
 - Moving a slider or pressing an arrow key: the script loads pages, it does not send input events. The math behind
   every slider is unit-tested (`npm test`).
-- Phone width: screenshots are taken at 1280 px only.
 
 A new chapter or panel gets a row in `CHAPTERS` in `scripts/verify.mjs` and a row here.

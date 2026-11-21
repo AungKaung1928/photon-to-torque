@@ -1,7 +1,7 @@
 // Drives the built site in headless Chrome and exits non-zero when a route is broken.
 // Feature map: docs/FEATURES.md. Run through scripts/verify.sh (it builds first).
 import { spawn, spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -99,6 +99,21 @@ async function startServer() {
 }
 
 mkdirSync(OUT, { recursive: true })
+
+// Phone width: headless Chrome cannot open a 390 px window on every platform, so a same-origin page holds the
+// site in a 390 px frame and prints the frame's scroll width next to its own width.
+const FRAME = join(ROOT, 'dist', '_frame.html')
+writeFileSync(
+  FRAME,
+  `<!doctype html><body style="margin:0"><iframe id="f" style="width:390px;height:844px;border:0"></iframe><script>
+const f = document.getElementById('f')
+f.onload = () => setTimeout(() => {
+  const d = f.contentDocument.documentElement
+  document.body.append('PHONE ' + d.scrollWidth + ' ' + d.clientWidth)
+}, 1500)
+f.src = '/' + location.hash
+</script>`,
+)
 const server = await startServer()
 let failed = 0
 let pages = 0
@@ -141,11 +156,21 @@ try {
     if (lang === 'ja' && !/<html lang="ja"/.test(home.dom)) bad.push('html lang is not ja')
     report(`overview (${lang})`, bad)
   }
+  // No sideways page scroll at 390 px, in both languages (Japanese lines break differently).
+  for (const ch of CHAPTERS) {
+    for (const lang of ['en', 'ja']) {
+      const p = load(`_frame.html#/${ch.route}/1`, { lang, shot: lang === 'en' ? `${ch.route}-1-phone.png` : undefined })
+      const m = p.dom.match(/PHONE (\d+) (\d+)/)
+      const bad = !m ? ['no width reading'] : Number(m[1]) > Number(m[2]) ? [`page is ${m[1]} px wide in a ${m[2]} px frame`] : []
+      report(`#/${ch.route}/1 at 390 px (${lang})`, bad)
+    }
+  }
   // An unknown route falls back to chapter 1, step 1 instead of a blank page.
   const lost = load('#/nope/99')
   report('#/nope/99 falls back', check(lost.dom, lost.consoleErrors, CHAPTERS[0], 1).bad)
 } finally {
   server.kill()
+  rmSync(FRAME, { force: true })
 }
 
 console.log(`${pages - failed}/${pages} checks passed, screenshots in verify-out/`)
