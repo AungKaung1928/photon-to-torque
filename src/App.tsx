@@ -16,6 +16,8 @@ import { SpreadPlot } from './components/SpreadPlot'
 import { ReplayPlot } from './components/ReplayPlot'
 import { CONTENT, useContent } from './content'
 import { panelForStep } from './content/evidence'
+import { checkQos } from './content/dds'
+import type { QosSide } from './content/dds'
 import type { Content } from './content'
 import { LangContext, initialLang, saveLang, useLang } from './i18n'
 import type { Lang } from './i18n'
@@ -405,6 +407,9 @@ const UI = {
   },
 }
 
+// Any valid pair: checkQos returns one result per policy it checks, so its length is the policy count.
+const ANY_QOS: QosSide = { reliability: 'reliable', durability: 'volatile', liveliness: 'automatic', deadlineMs: null, leaseMs: null }
+
 function chapters(lang: Lang, c: Content): Chapter[] {
   const ja = lang === 'ja'
   return [
@@ -483,7 +488,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
           step. {c.dds.dds.example}
         </>
       ),
-      headline: { value: '5', label: ja ? 'メッセージが届く前に一致が必要な QoS ポリシーの数' : 'QoS policies that must match before a message arrives' },
+      headline: { value: String(checkQos(ANY_QOS, ANY_QOS).length), label: ja ? 'メッセージが届く前に一致が必要な QoS ポリシーの数' : 'QoS policies that must match before a message arrives' },
       panels: DdsPanels,
       evidence: ['qos-h', 'profiles-h'],
     },
