@@ -3,7 +3,7 @@
 // different focused than blurred. Needs Node 22+ (built-in WebSocket) and a Chrome whose debug port this
 // process can reach (Linux CI). Run after `npm run build`.
 import { spawn } from 'node:child_process'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -106,15 +106,20 @@ try {
   const want = ['#/tick/2', '#/tick/1', '#/tick/8']
   report('arrow keys: right, left, left from step 1', seen.join() === want.join() ? [] : [`went ${seen.join(' → ')}, expected ${want.join(' → ')}`])
 
-  // Arrows inside a slider move the slider, not the step.
+  // Arrows inside a slider move the slider, not the step, and the readout follows to the sourced number:
+  // three steps of command delay must show the exported mean error for delay 3 (src/data/replay.ts).
+  const errByDelay = JSON.parse(readFileSync(join(ROOT, 'src/data/replay.ts'), 'utf8').match(/"meanErrByDelay":(\[[^\]]*\])/)[1])
   await open('#/sysid/3')
-  const before = await js(`(() => { const r = document.querySelector('input[type=range]'); r.focus(); return r.value })()`)
-  await press('ArrowRight')
-  const after = await js(`[location.hash, document.querySelector('input[type=range]').value]`)
+  const SLIDER = `document.querySelector('[aria-labelledby=replay-h] input[type=range]')`
+  const before = await js(`(() => { const r = ${SLIDER}; r.focus(); return r.value })()`)
+  for (let i = 0; i < 3; i++) await press('ArrowRight')
+  const after = await js(`[location.hash, ${SLIDER}.value, document.querySelector('[aria-labelledby=replay-h] .clip-read b:last-of-type').textContent]`)
   const bad = []
   if (after[0] !== '#/sysid/3') bad.push(`step changed to ${after[0]}`)
-  if (after[1] === before) bad.push('slider value did not move')
-  report('arrow keys inside a slider', bad)
+  if (Number(after[1]) !== Number(before) + 3) bad.push(`slider at ${after[1]}, expected ${Number(before) + 3}`)
+  const want3 = `${errByDelay[Number(before) + 3].toFixed(2)}°`
+  if (after[2] !== want3) bad.push(`readout shows ${after[2]}, expected ${want3}`)
+  report('arrow keys inside a slider move it and its readout', bad)
 
   // Every Tab stop must change how something looks: its outline, a ring, a border, or a tooltip.
   const LOOK = `(() => {
