@@ -82,6 +82,7 @@ export function ReplayPlot() {
           </label>
           <input
             id="replay-delay"
+            style={{ pointerEvents: "none" }}
             type="range"
             min={0}
             max={MAX_DELAY}
