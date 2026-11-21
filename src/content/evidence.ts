@@ -16,7 +16,7 @@ type Chapter = keyof typeof CHAPTER_PANELS
 export const STEP_PANEL = {
   tick: { policy: 'budget-h', controller: 'budget-h', physics: 'latency-h' },
   ppo: { ratio: 'clip-h', clip: 'clip-h', diagnose: 'diag-h' },
-  dds: { match: 'qos-h', publish: 'profiles-h', wire: 'profiles-h' },
+  dds: { match: 'qos-h', publish: 'profiles-h', wire: 'profiles-h', watch: 'qos-h' },
   sim2real: { holdout: 'holdout-h', metric: 'trap-h' },
   vla: { decode: 'scaling-h', timing: 'timing-h' },
   sysid: { replay: 'replay-h', fit: 'fit-h', spread: 'spread-h' },
