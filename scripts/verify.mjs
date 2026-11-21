@@ -45,13 +45,15 @@ function load(hash, { lang = 'en', shot } = {}) {
     '--headless=new',
     '--disable-gpu',
     '--no-first-run',
-    `--lang=${lang}`,
+    `--lang=${lang}`, // Windows and macOS Chrome
+    `--accept-lang=${lang}`, // Linux Chrome ignores --lang; this sets navigator.languages
     '--virtual-time-budget=4000',
     '--enable-logging=stderr',
     '--window-size=1280,1600',
   ]
   // --dump-dom and --screenshot do not combine: a screenshot is a second, separate load.
-  const run = (extra) => spawnSync(CHROME, [...args, ...extra, BASE + hash], { encoding: 'utf8', timeout: 60_000 })
+  const env = { ...process.env, LANGUAGE: lang }
+  const run = (extra) => spawnSync(CHROME, [...args, ...extra, BASE + hash], { encoding: 'utf8', timeout: 60_000, env })
   // Chrome's first start can return no DOM at all; a broken page still returns one, so this retry hides no failure.
   let r = run(['--dump-dom'])
   if (!r.stdout) r = run(['--dump-dom'])
@@ -130,7 +132,22 @@ f.onload = async () => {
     f.contentWindow.location.hash = '#/' + route + '/' + i
     await wait(250)
     const d = f.contentDocument.documentElement
-    document.body.append('PHONE ' + i + ' ' + d.scrollWidth + ' ' + d.clientWidth + ' ')
+    // On overflow, name the element that sticks out furthest, so a failure says what to fix.
+    // Elements inside a box that scrolls or clips sideways (the chapter strip) do not widen the page.
+    const w = f.contentWindow
+    const contained = (el) => {
+      for (let a = el.parentElement; a && a !== f.contentDocument.body; a = a.parentElement)
+        if (w.getComputedStyle(a).overflowX !== 'visible') return true
+      return false
+    }
+    let who = ''
+    let far = d.clientWidth + 1
+    if (d.scrollWidth > d.clientWidth)
+      for (const el of f.contentDocument.body.querySelectorAll('*')) {
+        const right = el.getBoundingClientRect().right
+        if (right > far && !contained(el)) { far = right; who = el.tagName.toLowerCase() + '.' + [...el.classList].join('.') }
+      }
+    document.body.append('PHONE ' + i + ' ' + d.scrollWidth + ' ' + d.clientWidth + ' ' + who + ' ')
   }
   f.contentWindow.location.hash = '#/' + route + '/1'
 }
@@ -186,9 +203,9 @@ try {
     for (const lang of ['en', 'ja']) {
       const n = totals[ch.route]
       const p = load(`_frame.html?n=${n}#/${ch.route}/1`, { lang, shot: lang === 'en' ? `${ch.route}-1-phone.png` : undefined })
-      const rows = [...p.dom.matchAll(/PHONE (\d+) (\d+) (\d+)/g)]
+      const rows = [...p.dom.matchAll(/PHONE (\d+) (\d+) (\d+) ([^ ]*)/g)]
       const bad = rows.length !== n ? [`${rows.length} of ${n} steps measured`] : []
-      for (const [, step, w, cw] of rows) if (Number(w) > Number(cw)) bad.push(`step ${step} is ${w} px wide in a ${cw} px frame`)
+      for (const [, step, w, cw, who] of rows) if (Number(w) > Number(cw)) bad.push(`step ${step} is ${w} px wide in a ${cw} px frame (sticks out furthest: ${who})`)
       report(`#/${ch.route} all ${n} steps at 390 px (${lang})`, bad)
     }
   }
