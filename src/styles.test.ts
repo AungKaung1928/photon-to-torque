@@ -54,3 +54,21 @@ describe('dark theme', () => {
     expect(tokens(css, ":root:not([data-theme='light'])")).toEqual(tokens(css, ":root[data-theme='dark']"))
   })
 })
+
+// All motion in the app is CSS (no JS animation, no smooth scrolling), so one rule can switch it off.
+describe('reduced motion', () => {
+  it('turns off every transition and animation', () => {
+    const at = css.indexOf('@media (prefers-reduced-motion: reduce)')
+    expect(at).toBeGreaterThan(-1)
+    const block = css.slice(at, css.indexOf('}', at))
+    expect(block).toMatch(/\*,\s*\*::before,\s*\*::after\s*\{/)
+    expect(block).toContain('transition: none !important')
+    expect(block).toContain('animation: none !important')
+  })
+  it('no smooth scrolling or JS animation that would ignore it', () => {
+    expect(css).not.toMatch(/scroll-behavior:\s*smooth/)
+    const code = import.meta.glob<string>(['./**/*.tsx', './**/*.ts', '!./**/*.test.ts'], { query: '?raw', import: 'default', eager: true })
+    expect(Object.keys(code).length).toBeGreaterThan(10)
+    for (const [file, text] of Object.entries(code)) expect(text, file).not.toMatch(/behavior:\s*'smooth'|requestAnimationFrame|\.animate\(/)
+  })
+})

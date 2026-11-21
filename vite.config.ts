@@ -5,6 +5,6 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // The contrast test reads the colour tokens from the real stylesheet; vitest stubs CSS otherwise.
+  // The style tests read the colour tokens and motion rules from the real stylesheet; vitest stubs CSS otherwise.
   test: { css: { include: [/index\.css/] } },
 })
