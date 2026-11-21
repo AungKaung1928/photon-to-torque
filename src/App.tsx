@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Stage } from './content/tick'
 import { StageRing } from './components/StageRing'
@@ -555,13 +555,21 @@ export default function App() {
 
   const Panels = ch.panels
 
+  // The phone-width chapter strip scrolls sideways: keep the open chapter inside it.
+  const strip = useRef<HTMLOListElement>(null)
+  useEffect(() => {
+    const ol = strip.current
+    const link = ol?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (ol && link) ol.scrollLeft = link.offsetLeft - ol.offsetLeft - 16
+  }, [ch.n, lang])
+
   return (
     <LangContext.Provider value={lang}>
       <div className="page">
         <header className="masthead">
           <p className="brand">Photon to Torque</p>
           <nav aria-label={ui.chapters}>
-            <ol className="chapters">
+            <ol className="chapters" ref={strip}>
               {list.map((c) => (
                 <li key={c.n} className="ready">
                   <a id={`chapter-${c.n}`} href={`#/${c.route}/1`} aria-current={c.n === ch.n ? 'page' : undefined}>

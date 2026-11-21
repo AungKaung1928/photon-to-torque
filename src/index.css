@@ -1523,3 +1523,25 @@ li.bad .r-tag {
     padding-bottom: 96px;
   }
 }
+
+/* Phone: brand and language switch share the first row; chapters are one strip that scrolls inside itself. */
+@media (max-width: 700px) {
+  .masthead {
+    align-items: center;
+  }
+  .masthead nav {
+    order: 3;
+    flex-basis: 100%;
+    min-width: 0;
+  }
+  .chapters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .chapters li {
+    flex: none;
+  }
+}
