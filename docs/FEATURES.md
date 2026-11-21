@@ -17,6 +17,7 @@ console error, a missing element or an empty drawing. Screenshots of the overvie
 | Wrap-around | Next on the last step | Loads the last step | Next links to `#/<route>/1` |
 | Chapter panels | Below the step card | Looks for each panel heading id (table below) | Heading present, at least one SVG, no empty SVG |
 | Jump to evidence | Buttons under the chapter intro | Looks for one button per panel (`evidence-<panel id>`) on every step | Button present for each panel heading |
+| Step marks its evidence | Active jump button + "evidence for this step" chip on the panel heading | On one mapped step per chapter, checks `aria-current` on the button and the chip in the heading | Both present; break test: unmapped sysid `replay` → exit 1 |
 | Japanese | Language switch, or a Japanese browser | Loads step 1 of every chapter with the browser language set to `ja` | `<html lang="ja">`, chapter title differs from English |
 | Phone width | A 390 px wide phone | Loads step 1 of every chapter inside a 390 px frame, in English and Japanese, and reads the page's scroll width | Page is no wider than the frame (no sideways scroll); screenshot `<route>-1-phone.png` |
 | Unknown link | A mistyped or old URL | Loads `#/nope/99` | Chapter 1, step 1 is shown, never a blank page |

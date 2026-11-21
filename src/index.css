@@ -1661,3 +1661,18 @@ main {
 .panel {
   scroll-margin-top: 12px;
 }
+
+/* The open step's own panel: its jump button and its heading carry a solid mark. */
+.evidence .btn[aria-current] {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.chip.here {
+  margin-left: 10px;
+  vertical-align: middle;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+  letter-spacing: 0;
+}

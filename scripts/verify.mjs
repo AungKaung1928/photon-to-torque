@@ -10,14 +10,15 @@ const PORT = Number(process.env.VERIFY_PORT ?? 4179)
 const BASE = `http://localhost:${PORT}/`
 const OUT = join(ROOT, 'verify-out')
 
-// One row per chapter: its route and the panel headings a visitor must see below the step card.
+// One row per chapter: its route, the panel headings a visitor must see, and one [step, panel] pair where the
+// step marks that panel as its evidence.
 const CHAPTERS = [
-  { route: 'tick', panels: ['budget-h', 'latency-h'] },
-  { route: 'ppo', panels: ['clip-h', 'diag-h'] },
-  { route: 'dds', panels: ['qos-h', 'profiles-h'] },
-  { route: 'sim2real', panels: ['holdout-h', 'trap-h'] },
-  { route: 'vla', panels: ['scaling-h', 'timing-h', 'ladder-h'] },
-  { route: 'sysid', panels: ['replay-h', 'fit-h', 'spread-h'] },
+  { route: 'tick', mark: [3, 'budget-h'], panels: ['budget-h', 'latency-h'] },
+  { route: 'ppo', mark: [7, 'diag-h'], panels: ['clip-h', 'diag-h'] },
+  { route: 'dds', mark: [1, 'qos-h'], panels: ['qos-h', 'profiles-h'] },
+  { route: 'sim2real', mark: [3, 'holdout-h'], panels: ['holdout-h', 'trap-h'] },
+  { route: 'vla', mark: [6, 'timing-h'], panels: ['scaling-h', 'timing-h', 'ladder-h'] },
+  { route: 'sysid', mark: [3, 'replay-h'], panels: ['replay-h', 'fit-h', 'spread-h'] },
 ]
 
 function findChrome() {
@@ -75,6 +76,10 @@ function check(dom, consoleErrors, ch, step) {
   if (!dom.includes(`id="${ch.route}-next"`)) bad.push('no Next button')
   for (const id of ch.panels) if (!dom.includes(`id="${id}"`)) bad.push(`panel ${id} missing`)
   for (const id of ch.panels) if (!dom.includes(`id="evidence-${id}"`)) bad.push(`no jump button to ${id}`)
+  if (step === ch.mark[0]) {
+    if (!new RegExp(`id="evidence-${ch.mark[1]}"[^>]*aria-current="true"`).test(dom)) bad.push(`step does not mark ${ch.mark[1]}`)
+    if (!new RegExp(`<h2 id="${ch.mark[1]}">[^<]*<span class="chip here"`).test(dom)) bad.push(`panel ${ch.mark[1]} is not marked`)
+  }
   if (/<svg[^>]*>\s*<\/svg>/.test(dom)) bad.push('empty svg')
   if (!/<svg/.test(dom)) bad.push('no svg drawn')
   return { bad, total: pos ? Number(pos[2]) : 0, h1: text(dom, /<h1>([^<]+)<\/h1>/) }

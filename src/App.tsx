@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Stage } from './content/tick'
 import { StageRing } from './components/StageRing'
@@ -15,6 +15,7 @@ import { LatencyLadder } from './components/LatencyLadder'
 import { SpreadPlot } from './components/SpreadPlot'
 import { ReplayPlot } from './components/ReplayPlot'
 import { CONTENT, useContent } from './content'
+import { panelForStep } from './content/evidence'
 import type { Content } from './content'
 import { LangContext, initialLang, saveLang, useLang } from './i18n'
 import type { Lang } from './i18n'
@@ -57,8 +58,19 @@ const PANEL_TITLES = {
 } as const
 type PanelId = keyof typeof PANEL_TITLES
 
+// The panel that belongs to the open step, if it has one.
+const StepPanelContext = createContext<string | undefined>(undefined)
+const HERE = { en: 'evidence for this step', ja: 'このステップの根拠' }
+
 function PanelTitle({ id }: { id: PanelId }) {
-  return <h2 id={id}>{PANEL_TITLES[id][useLang()]}</h2>
+  const lang = useLang()
+  const here = useContext(StepPanelContext) === id
+  return (
+    <h2 id={id}>
+      {PANEL_TITLES[id][lang]}
+      {here && <span className="chip here">{HERE[lang]}</span>}
+    </h2>
+  )
 }
 
 function TickPanels() {
@@ -600,6 +612,7 @@ export default function App() {
   }
 
   const Panels = ch.panels
+  const stepPanel = panelForStep(ch.route, ch.stages[index].id)
 
   // The phone-width chapter strip scrolls sideways: keep the open chapter inside it.
   const strip = useRef<HTMLOListElement>(null)
@@ -676,6 +689,7 @@ export default function App() {
                   id={`evidence-${id}`}
                   type="button"
                   className="btn small"
+                  aria-current={id === stepPanel ? 'true' : undefined}
                   onClick={() => document.getElementById(id)?.scrollIntoView({ block: 'start' })}
                 >
                   {PANEL_TITLES[id][lang]}
@@ -704,7 +718,9 @@ export default function App() {
               />
             </section>
 
-            <Panels />
+            <StepPanelContext.Provider value={stepPanel}>
+              <Panels />
+            </StepPanelContext.Provider>
           </main>
         )}
 
