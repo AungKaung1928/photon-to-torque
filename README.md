@@ -2,7 +2,7 @@
 
 A study app that follows one robot control tick from the camera to the motor, stage by stage. For each stage it shows what happens, the time budget, the main failure mode, and the source of every number.
 
-Status: 6 chapters are written. Content lives in `src/content/` (`tick.ts`, `ppo.ts`, `dds.ts`, `sim2real.ts`, `vla.ts`, `sysid.ts`); components only render it. The site opens on an overview with one card per chapter. Links: `#/tick/1`, `#/ppo/1`, `#/dds/1`, `#/sim2real/1`, `#/vla/1`, `#/sysid/1`, each with numbered steps. Arrow keys step through.
+Status: complete at 6 chapters. The measured latency ladder that was planned as a seventh chapter is a panel of chapter 5. Content lives in `src/content/` (`tick.ts`, `ppo.ts`, `dds.ts`, `sim2real.ts`, `vla.ts`, `sysid.ts`); components only render it. The site opens on an overview with one card per chapter. Links: `#/tick/1`, `#/ppo/1`, `#/dds/1`, `#/sim2real/1`, `#/vla/1`, `#/sysid/1`, each with numbered steps. Arrow keys step through.
 
 ## Chapters
 
