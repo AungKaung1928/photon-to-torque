@@ -118,7 +118,7 @@ export function ReplayPlot() {
       </ul>
       <p className="clip-read">
         {T.err} <b className="num">{meanAbsErr(sim, real).toFixed(2)}°</b>{T.sep}{T.all}{' '}
-        <b className="num">{replay.meanErrByDelay[delay].toFixed(2)}°</b>
+        <b className="num">{replay.meanErrByDelay[Math.max(0, delay - 1)].toFixed(2)}°</b>
       </p>
       <p className="panel-note">{T.note}</p>
       <SourceList sources={[{ label: T.source, ref: 'so-arm100-sim/scripts/export_replay_json.py' }]} />
