@@ -74,6 +74,7 @@ function check(dom, consoleErrors, ch, step) {
   if (!/aria-current="step"/.test(dom)) bad.push('ring has no current step')
   if (!dom.includes(`id="${ch.route}-next"`)) bad.push('no Next button')
   for (const id of ch.panels) if (!dom.includes(`id="${id}"`)) bad.push(`panel ${id} missing`)
+  for (const id of ch.panels) if (!dom.includes(`id="evidence-${id}"`)) bad.push(`no jump button to ${id}`)
   if (/<svg[^>]*>\s*<\/svg>/.test(dom)) bad.push('empty svg')
   if (!/<svg/.test(dom)) bad.push('no svg drawn')
   return { bad, total: pos ? Number(pos[2]) : 0, h1: text(dom, /<h1>([^<]+)<\/h1>/) }

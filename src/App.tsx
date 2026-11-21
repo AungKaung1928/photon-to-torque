@@ -35,6 +35,30 @@ interface Chapter {
   intro: ReactNode
   headline: { value: string; label: string } // the chapter's strongest sourced number, shown on the overview
   panels: () => ReactNode
+  evidence: PanelId[] // ids of the panels that `panels` renders, in page order
+}
+
+// Evidence panels: one heading per panel id, in both languages. The panels and the jump buttons both read it.
+const PANEL_TITLES = {
+  'budget-h': { en: 'The 20 ms budget, to scale', ja: '20 ms の時間予算(実寸比)' },
+  'latency-h': { en: 'The network is the cheap part', ja: 'ニューラルネットはコストの小さい部分' },
+  'clip-h': { en: 'What the clip does to one sample', ja: 'クリップが 1 サンプルに与える影響' },
+  'diag-h': { en: 'What the diagnostics caught', ja: '診断指標が捉えたこと' },
+  'qos-h': { en: 'Will these two connect?', ja: 'この 2 つはつながるか' },
+  'profiles-h': { en: 'The two profiles you meet first', ja: '最初に出会う 2 つのプロファイル' },
+  'holdout-h': { en: 'Every cell the arm never trained on', ja: 'アームが一度も学習していない全セル' },
+  'trap-h': { en: 'A metric the policy gamed', ja: 'ポリシーが抜け道を見つけた指標' },
+  'scaling-h': { en: 'More demonstrations do not rescue one step at a time', ja: 'デモを増やしても 1 ステップずつの予測は救えない' },
+  'timing-h': { en: 'Will the chunk cover its own inference?', ja: 'チャンクは自身の推論時間をカバーできるか' },
+  'ladder-h': { en: 'Microseconds to seconds on one CPU', ja: '同じ CPU で、マイクロ秒から秒まで' },
+  'replay-h': { en: 'Real commands, replayed in sim', ja: '実機の指令をシミュレーションで再生する' },
+  'fit-h': { en: 'Error on held-out episodes', ja: 'ホールドアウトのエピソードでの誤差' },
+  'spread-h': { en: 'Is the spread inside the training range?', ja: 'ばらつきは学習範囲に入っているか' },
+} as const
+type PanelId = keyof typeof PANEL_TITLES
+
+function PanelTitle({ id }: { id: PanelId }) {
+  return <h2 id={id}>{PANEL_TITLES[id][useLang()]}</h2>
 }
 
 function TickPanels() {
@@ -48,11 +72,11 @@ function TickPanels() {
   return (
     <>
       <section className="panel" aria-labelledby="budget-h">
-        <h2 id="budget-h">{lang === 'ja' ? '20 ms の時間予算(実寸比)' : 'The 20 ms budget, to scale'}</h2>
+        <PanelTitle id="budget-h" />
         <TickTimeline />
       </section>
       <section className="panel" aria-labelledby="latency-h">
-        <h2 id="latency-h">{lang === 'ja' ? 'ニューラルネットはコストの小さい部分' : 'The network is the cheap part'}</h2>
+        <PanelTitle id="latency-h" />
         <p className="panel-lede">
           {lang === 'ja' ? (
             <>
@@ -80,11 +104,11 @@ function PpoPanels() {
   return (
     <>
       <section className="panel" aria-labelledby="clip-h">
-        <h2 id="clip-h">{lang === 'ja' ? 'クリップが 1 サンプルに与える影響' : 'What the clip does to one sample'}</h2>
+        <PanelTitle id="clip-h" />
         <ClipPlot />
       </section>
       <section className="panel" aria-labelledby="diag-h">
-        <h2 id="diag-h">{lang === 'ja' ? '診断指標が捉えたこと' : 'What the diagnostics caught'}</h2>
+        <PanelTitle id="diag-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? '前半 25M ステップは KL 停止なしで実行しました。毎回の更新でポリシーはクリップが許すはずの範囲を超えて動き、リターンは改善しませんでした。後半 25M ステップでは目標 KL 0.02 を追加しました。'
@@ -101,7 +125,7 @@ function DdsPanels() {
   return (
     <>
       <section className="panel" aria-labelledby="qos-h">
-        <h2 id="qos-h">{lang === 'ja' ? 'この 2 つはつながるか' : 'Will these two connect?'}</h2>
+        <PanelTitle id="qos-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? 'それぞれの側の要求を選んでください。ROS 2 は QoS ポリシーを 1 つずつ確認し、1 つでも不一致があればメッセージはすべて届きません。'
@@ -110,7 +134,7 @@ function DdsPanels() {
         <QosChecker />
       </section>
       <section className="panel" aria-labelledby="profiles-h">
-        <h2 id="profiles-h">{lang === 'ja' ? '最初に出会う 2 つのプロファイル' : 'The two profiles you meet first'}</h2>
+        <PanelTitle id="profiles-h" />
         <ProfilesTable />
       </section>
     </>
@@ -137,7 +161,7 @@ function Sim2RealPanels() {
   return (
     <>
       <section className="panel" aria-labelledby="holdout-h">
-        <h2 id="holdout-h">{lang === 'ja' ? 'アームが一度も学習していない全セル' : 'Every cell the arm never trained on'}</h2>
+        <PanelTitle id="holdout-h" />
         <p className="panel-lede">
           {lang === 'ja' ? (
             <>
@@ -179,7 +203,7 @@ function Sim2RealPanels() {
         />
       </section>
       <section className="panel" aria-labelledby="trap-h">
-        <h2 id="trap-h">{lang === 'ja' ? 'ポリシーが抜け道を見つけた指標' : 'A metric the policy gamed'}</h2>
+        <PanelTitle id="trap-h" />
         <p className="panel-lede">
           {lang === 'ja' ? (
             <>
@@ -228,11 +252,7 @@ function VlaPanels() {
   return (
     <>
       <section className="panel" aria-labelledby="scaling-h">
-        <h2 id="scaling-h">
-          {lang === 'ja'
-            ? 'デモを増やしても 1 ステップずつの予測は救えない'
-            : 'More demonstrations do not rescue one step at a time'}
-        </h2>
+        <PanelTitle id="scaling-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? 'デモも、画像エンコーダの系統も、L1 損失も同じです。違うのは出力だけで、1 ステップに 1 行動か、20 行動のチャンクかです。'
@@ -263,9 +283,7 @@ function VlaPanels() {
         />
       </section>
       <section className="panel" aria-labelledby="timing-h">
-        <h2 id="timing-h">
-          {lang === 'ja' ? 'チャンクは自身の推論時間をカバーできるか' : 'Will the chunk cover its own inference?'}
-        </h2>
+        <PanelTitle id="timing-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? '450M パラメータの VLA を、このプロジェクトの CPU で計測しました。チャンク長をドラッグして、アームがどれだけ待つかを見てください。'
@@ -274,7 +292,7 @@ function VlaPanels() {
         <ChunkTimer />
       </section>
       <section className="panel" aria-labelledby="ladder-h">
-        <h2 id="ladder-h">{lang === 'ja' ? '同じ CPU で、マイクロ秒から秒まで' : 'Microseconds to seconds on one CPU'}</h2>
+        <PanelTitle id="ladder-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? 'このサイトの方策と検出器を同じノート PC の CPU で計測した結果を、制御周期と並べました。小さな方策は周期のごく一部しか使いませんが、VLA の 1 チャンクは周期の数十倍かかります。'
@@ -292,7 +310,7 @@ function SysidPanels() {
   return (
     <>
       <section className="panel" aria-labelledby="replay-h">
-        <h2 id="replay-h">{lang === 'ja' ? '実機の指令をシミュレーションで再生する' : 'Real commands, replayed in sim'}</h2>
+        <PanelTitle id="replay-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? '実機アームの 1 エピソードです。指令、実機のフォロワー、フィットしたサーボを持つシミュレーションのフォロワーを重ねています。遅延をドラッグして、誤差がどう動くかを見てください。'
@@ -301,7 +319,7 @@ function SysidPanels() {
         <ReplayPlot />
       </section>
       <section className="panel" aria-labelledby="fit-h">
-        <h2 id="fit-h">{lang === 'ja' ? 'ホールドアウトのエピソードでの誤差' : 'Error on held-out episodes'}</h2>
+        <PanelTitle id="fit-h" />
         <figure className="diag">
           <div className="table-scroll">
             <table>
@@ -328,7 +346,7 @@ function SysidPanels() {
         </figure>
       </section>
       <section className="panel" aria-labelledby="spread-h">
-        <h2 id="spread-h">{lang === 'ja' ? 'ばらつきは学習範囲に入っているか' : 'Is the spread inside the training range?'}</h2>
+        <PanelTitle id="spread-h" />
         <p className="panel-lede">
           {lang === 'ja'
             ? '20 エピソードを 1 つずつフィットした結果と、方策の学習に使ったランダム化の箱です。摩擦の上限をドラッグして、何個が内側に入るかを見てください。'
@@ -346,6 +364,7 @@ const UI = {
     chapter: (n: number) => `Chapter ${n}`,
     language: 'Language',
     overview: 'Overview',
+    evidence: 'Evidence in this chapter',
     tagline:
       'Six short chapters on what happens between a sensor reading and a motor command. Every number comes from a measured run and names its source.',
     start: 'Open chapter',
@@ -357,6 +376,7 @@ const UI = {
     chapter: (n: number) => `第 ${n} 章`,
     language: '表示言語',
     overview: '全体図',
+    evidence: 'この章の根拠',
     tagline:
       'センサーの読み取りからモーター指令までに起きることを、6 つの短い章で追います。数値はすべて実測で、出典を示します。',
     start: 'この章を開く',
@@ -391,6 +411,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: `${latency.find((r) => r.id === 'duck-py')!.p50Ms.toFixed(3)} ms`, label: ja ? 'ポリシーの順伝播 (p50)。制御ティックは 20 ms' : 'policy forward pass (p50) inside a 20 ms tick' },
       panels: TickPanels,
+      evidence: ['budget-h', 'latency-h'],
     },
     {
       n: 2,
@@ -417,6 +438,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: (c.ppo.config.numEnvs * c.ppo.config.numSteps).toLocaleString('en-US'), label: ja ? 'PPO の更新 1 回に使う遷移数' : 'transitions in one PPO update' },
       panels: PpoPanels,
+      evidence: ['clip-h', 'diag-h'],
     },
     {
       n: 3,
@@ -443,6 +465,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: '5', label: ja ? 'メッセージが届く前に一致が必要な QoS ポリシーの数' : 'QoS policies that must match before a message arrives' },
       panels: DdsPanels,
+      evidence: ['qos-h', 'profiles-h'],
     },
     {
       n: 4,
@@ -469,6 +492,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: `${c.tick.latencyGap.rows[0].nominalTrained.success} → ${c.tick.latencyGap.rows[1].nominalTrained.success}`, label: ja ? '行動レイテンシ 3 ステップでの成功率 (シミュレーション)' : 'success rate with 3 steps of action latency (simulation)' },
       panels: Sim2RealPanels,
+      evidence: ['holdout-h', 'trap-h'],
     },
     {
       n: 5,
@@ -496,6 +520,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: `${Math.min(...latency.map((r) => r.p50Ms))} – ${Math.max(...latency.map((r) => r.p50Ms)).toLocaleString('en-US')} ms`, label: ja ? `1 台のノート PC の CPU で計測した ${latency.length} モデルの p50` : `p50 of ${latency.length} models on one laptop CPU` },
       panels: VlaPanels,
+      evidence: ['scaling-h', 'timing-h', 'ladder-h'],
     },
     {
       n: 6,
@@ -520,6 +545,7 @@ function chapters(lang: Lang, c: Content): Chapter[] {
       ),
       headline: { value: String(spread.length), label: ja ? '実機 SO-100 の記録から得たエピソードごとのサーボ同定' : 'per-episode servo fits from a real SO-100 recording' },
       panels: SysidPanels,
+      evidence: ['replay-h', 'fit-h', 'spread-h'],
     },
   ]
 }
@@ -641,6 +667,21 @@ export default function App() {
               <h1>{ch.title}</h1>
               <p>{ch.intro}</p>
             </section>
+
+            <nav className="evidence" aria-label={ui.evidence}>
+              <span className="eyebrow">{ui.evidence}</span>
+              {ch.evidence.map((id) => (
+                <button
+                  key={id}
+                  id={`evidence-${id}`}
+                  type="button"
+                  className="btn small"
+                  onClick={() => document.getElementById(id)?.scrollIntoView({ block: 'start' })}
+                >
+                  {PANEL_TITLES[id][lang]}
+                </button>
+              ))}
+            </nav>
 
             <section className="bench" aria-label={ch.ringLabel}>
               <StageRing

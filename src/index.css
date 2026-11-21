@@ -1650,3 +1650,14 @@ main {
     fill 160ms ease,
     stroke 160ms ease;
 }
+
+/* Evidence jump row under the chapter intro, above the step area. Buttons, not "#id" links: the hash is the route. */
+.evidence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.panel {
+  scroll-margin-top: 12px;
+}

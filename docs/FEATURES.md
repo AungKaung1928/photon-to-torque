@@ -16,6 +16,7 @@ console error, a missing element or an empty drawing. Screenshots of the overvie
 | Step-through | Next / Back buttons, arrow keys, ring | Reads "1 / N" on step 1, then loads every `#/<route>/<k>` up to N | Position text shows `k / N` on step k |
 | Wrap-around | Next on the last step | Loads the last step | Next links to `#/<route>/1` |
 | Chapter panels | Below the step card | Looks for each panel heading id (table below) | Heading present, at least one SVG, no empty SVG |
+| Jump to evidence | Buttons under the chapter intro | Looks for one button per panel (`evidence-<panel id>`) on every step | Button present for each panel heading |
 | Japanese | Language switch, or a Japanese browser | Loads step 1 of every chapter with the browser language set to `ja` | `<html lang="ja">`, chapter title differs from English |
 | Unknown link | A mistyped or old URL | Loads `#/nope/99` | Chapter 1, step 1 is shown, never a blank page |
 
