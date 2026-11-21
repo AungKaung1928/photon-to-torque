@@ -85,6 +85,8 @@ try {
   }
   const open = async (hash) => {
     await send('Page.navigate', { url: BASE + hash })
+    // A hash change keeps the old document (and its focus position); reload for a fresh one.
+    await send('Page.reload', { ignoreCache: false })
     await until(`page ${hash}`, () => js(`!!document.querySelector('h1') && location.hash === '${hash}'`))
     await sleep(300)
   }
