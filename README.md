@@ -1,8 +1,8 @@
 # Photon to Torque
 
-A study app that follows one robot control tick from the camera to the motor, stage by stage. For each stage it shows what happens, the time budget, the main failure mode, and the source of every number.
+A study app that follows one robot control tick from the camera to the motor in 6 chapters. Each stage shows what happens, its time budget, the main failure mode and the source of every number; a stage with no measurement says "not measured".
 
-Status: complete at 6 chapters. The measured latency ladder that was planned as a seventh chapter is a panel of chapter 5. Content lives in `src/content/` (`tick.ts`, `ppo.ts`, `dds.ts`, `sim2real.ts`, `vla.ts`, `sysid.ts`); components only render it. The site opens on an overview with one card per chapter. Links: `#/tick/1`, `#/ppo/1`, `#/dds/1`, `#/sim2real/1`, `#/vla/1`, `#/sysid/1`, each with numbered steps. Every chapter opens on its system diagram (`src/content/diagrams.ts`): one colour per component kind, the open step's node lit, Back / Play / Next under it; the replay and PPO ratio sliders pin their live value to their node. Arrow keys step through.
+<img src="docs/media/tick-1.webp" width="720" alt="Chapter 1: the control-tick diagram with the camera stage lit, stage 1 of 8, Back / Play / Next">
 
 ## Chapters
 
@@ -11,23 +11,9 @@ Status: complete at 6 chapters. The measured latency ladder that was planned as 
 3. One ROS 2 message and its QoS, with a compatibility checker.
 4. The sim-to-real gap: held-out physics on a simulated arm, and a metric a simulated biped gamed.
 5. VLA action chunking: chunked against single-step cloning, and whether a chunk covers its own inference time.
-6. System ID on a real arm: a simulated servo fitted to a public recording of a real SO-100 arm, with an interactive replay of one real episode.
+6. System ID on a real arm: a simulated servo fitted to a public recording of a real SO-100 arm, with a replay of one real episode.
 
-## Rules for content
-
-- Every number has a source: a paper, official documentation, or a measured result from one of the author's repositories (`microduck-rl`, `so-arm100-rl`, `so-arm100-il`, `so-arm100-vla`, `so-arm100-sim`).
-- A stage with no measurement says "not measured". No estimates.
-- English and Japanese: each content file has a Japanese twin (`tick.ja.ts` …) with the same exports. The build fails if a twin drops an export or changes a shape, and `src/content/parity.test.ts` fails if a number, id or reference differs. The EN / 日本語 switch sits in the header; the choice is saved in the browser.
-
-## Sources
-
-Every step and panel in the app lists its own sources. The ones cited most:
-
-- Measured results: the READMEs of `microduck-rl`, `so-arm100-rl`, `so-arm100-il`, `so-arm100-vla`, `so-arm100-sim`.
-- PPO: Schulman et al. 2017 (arXiv:1707.06347); GAE: Schulman et al. 2015 (arXiv:1506.02438); time limits: Pardo et al. 2017 (arXiv:1712.00378); "The 37 Implementation Details of PPO" (ICLR Blog Track 2022).
-- Sim-to-real: Tobin et al. 2017, domain randomization (arXiv:1703.06907); Hwangbo et al. 2019, learned actuator model (arXiv:1901.08652).
-- Action chunking: Zhao et al. 2023, ACT (arXiv:2304.13705).
-- ROS 2 Jazzy documentation: Quality of Service settings, executors; ros2_control; OMG DDSI-RTPS specification.
+English and Japanese: each content file in `src/content/` has a Japanese twin; `src/content/parity.test.ts` fails if a number, id or reference differs.
 
 ## Run locally
 
@@ -57,5 +43,9 @@ Stack: Vite, React, TypeScript. Static site, hash routing, inline SVG.
 ## Docs
 
 - `docs/FEATURES.md`: what the site must do and how `scripts/verify.sh` checks each feature.
-- `docs/DESIGN.md`: structure and content rules.
+- `docs/DESIGN.md`: structure, content rules, the most-cited sources.
 - `docs/CH1_OUTLINE.md`: chapter 1 stages with budgets and sources.
+
+## License
+
+MIT, see LICENSE.
